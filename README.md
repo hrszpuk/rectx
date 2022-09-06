@@ -11,16 +11,14 @@
 </p>
 
 <p align="center">
-ReCTx makes your projects easier to manage by allowing you to configure everything in an easy to navigate config file!<br>
-Currently, ReCT has multiple compilers, packaging systems, and tools that may be intimidating for even an advanced user.<br>
-We've made everything to do with ReCT projects managable under a single easy to use and well documented system!<br>
+ReCTx makes your projects easier to manage by allowing you to configure everything in an easy to navigate config file!
+Currently, ReCT has multiple compilers, packaging systems, and tools that may be intimidating for even an advanced user.
+We've made everything to do with ReCT projects managable under a single easy to use and well documented system!
 </p>
-
----
 
 ### Features
 - **Project creation**: Create new projects with generated directories and files using a simple command!
-- **Easily build and run projects**: Building/Running projects is as easy as `rectx build`/`rectx run`, no more compiler flags!
+- **Easily build and run projects**: Building/Running projects is as easy as `rectx build`/`rectx run`!
 
 
 ## Installation
