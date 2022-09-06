@@ -1,6 +1,6 @@
-<h1 align="center">
-  <img src="https://raw.githubusercontent.com/hrszpuk/rectx/master/rectx.png" width=250 height=250 />
-</h1>
+<p align="center">
+  <img align="center" src="https://raw.githubusercontent.com/hrszpuk/rectx/master/rectx.png" width=250 height=250 />
+</p>
 <p align="center">:radioactive: A powerful project manager for the ReCT programming language! :radioactive:</p>
 
 <p align="center">
@@ -11,14 +11,16 @@
 </p>
 
 <p align="center">
-The ReCT programming language was created by RedCubeDev, and originally a ByteSpace project.
-Currently, the language has multiple compilers, packaging systems, and tools that may be intimidating for even an advanced user.
-ReCTx makes your projects easier to manage by allowing you to configure everything in a easy to navigate config file!
+ReCTx makes your projects easier to manage by allowing you to configure everything in an easy to navigate config file!<br>
+Currently, ReCT has multiple compilers, packaging systems, and tools that may be intimidating for even an advanced user.<br>
+We've made everything to do with ReCT projects managable under a single easy to use and well documented system!<br>
 </p>
 
+---
+
 ### Features
-- **Project generation**: generate project directory and settings based on different profiles to choose from.
-- **Easily build and run projects**: building and running are as simple as `rectx build` or `rectx run`! 
+- **Project creation**: Create new projects with generated directories and files using a simple command!
+- **Easily build and run projects**: Building/Running projects is as easy as `rectx build`/`rectx run`, no more compiler flags!
 
 
 ## Installation
