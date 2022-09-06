@@ -59,7 +59,3 @@ rectx run
 This will build the soruce file `main.rct` in `/src` into an exectuable called `main`.
 This command will also run the executable, you should be able to see any output in the console.
 
-## License
-
-
-## Contributors
