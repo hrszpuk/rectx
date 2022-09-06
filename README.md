@@ -1,9 +1,20 @@
-# rectx
-A quick and easy to use project manager for ReCT programming language based projects.
+<h1 align="center">
+  <img src="https://raw.githubusercontent.com/hrszpuk/rectx/master/rectx.png" width=250 height=250 />
+</h1>
+<p align="center">:radioactive: A powerful project manager for the ReCT programming language! :radioactive:</p>
 
+<p align="center">
+<a href="./LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+<a href="https://github.com/hrszpuk"><img src="https://img.shields.io/github/followers/hrszpuk?style=social"></a>
+<a href="https://twitter.com/hrszpuk"><img src="https://img.shields.io/twitter/follow/hrszpuk?style=social"></a>
+<a href="https://github.com/hrszpuk/Owl/issues"><img src="https://img.shields.io/github/issues/hrszpuk/rectx"></a>
+</p>
+
+<p align="center">
 The ReCT programming language was created by RedCubeDev, and originally a ByteSpace project.
-Currently, the language is multiple compilers, package systems, and projects that may be intimidating.
-ReCTx tries to simplify projects by automatically setting up everything you will need in your ReCT journey!
+Currently, the language has multiple compilers, packaging systems, and tools that may be intimidating for even an advanced user.
+ReCTx makes your projects easier to manage by allowing you to configure everything in a easy to navigate config file!
+</p>
 
 ### Features
 - **Project generation**: generate project directory and settings based on different profiles to choose from.
@@ -18,8 +29,7 @@ Cargo will be installed a long side the Rust programming language (installation 
 
 To get started, first clone the project from GitHub and change directory to the project:
 ```
-git clone https://github.com/hrszpuk/rectx.git
-cd rectx
+git clone https://github.com/hrszpuk/rectx.git && cd rectx
 ```
 From here, use cargo to build the project in release mode:
 ```
