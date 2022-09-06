@@ -8,7 +8,6 @@ fn main() {
 mod cli {
     use std::process::exit;
     use crate::manager;
-    use crate::manager::generate_project;
 
     /// Takes the command line arguments and calls the correct function.
     pub fn process_flags(args: std::env::Args) {
@@ -54,10 +53,10 @@ $ rectx build
     /// This is called when the user calls the command "new".
     pub fn new_project(args: &Vec<String>) {
         if args.len() > 1 {
-            match manager::generate_project(&args[1]) {
-                Ok(()) => println!("Created new project \"{}\"!", args[1]),
+            match manager::generate_project_directory(&args[1]) {
+                Ok(()) => println!("rectx :: Created new project \"{}\"!", args[1]),
                 Err(error) => {
-                    println!("Failed to create project \"{}\"!", args[1]);
+                    println!("rectx :: Failed to create project \"{}\"!", args[1]);
                     println!("{:?}", error);
                 },
             };
@@ -68,13 +67,26 @@ $ rectx build
     /// Builds the project in the current directory.
     /// This is called when the user calls the command "build".
     pub fn build_project() {
-
+        println!("Building project!");
+        match manager::generate_project_executable() {
+            Ok(()) => println!("rectx :: Executable was generated successfully!"),
+            Err(error) => {
+                println!("rectx :: Failed to generate executable!");
+                println!("{:?}", error);
+            }
+        }
+        exit(0);
     }
 
     /// Runs the project in the current directory.
     /// This is called when the user calls the command "run".
     pub fn run_project() {
-
+        match manager::generate_executable_and_run() {
+            Ok(()) => println!("rectx :: Executable was generated successfully!"),
+            Err(error) => {
+                println!("rectx :: Execution failed!")
+            }
+        }
     }
 }
 
@@ -84,7 +96,7 @@ mod manager {
     use std::io::Write;
     use std::process::Command;
 
-    pub fn generate_project(name: &String) -> std::io::Result<()> {
+    pub fn generate_project_directory(name: &String) -> std::io::Result<()> {
         fs::create_dir_all(name)?;
         fs::create_dir(format!("{}/src", name))?;
         let mut main = fs::File::create(
@@ -95,11 +107,42 @@ mod manager {
             format!("{}/README.md", name)
         )?;
         readme.write_all(format!("# {}\n", name).as_ref())?;
-        Command::new("git")
-            .arg("init")
-            .arg(name)
-            .spawn()?;
 
+        Ok(())
+    }
+
+    pub fn generate_project_executable() -> std::io::Result<()> {
+        // Getting source files
+        let dir_paths = fs::read_dir("./src")?;
+        let mut paths = Vec::new();
+        for path in dir_paths {
+            let x = path?.file_name();
+            let x = match x.into_string() {
+                Ok(filename) => filename,
+                Err(error) => {
+                    println!("{:?}", error);
+                    String::new()
+                }
+            };
+            paths.push(x);
+        }
+
+        // Building file
+        if paths.contains(&String::from("main.rct")) {
+            Command::new("rgoc")
+                .arg("./src/main.rct")
+                .spawn()?;
+        } else {
+            println!("rectx :: Could not find \"main.rct\" in \"/src\"!");
+        }
+
+        Ok(())
+    }
+
+    pub fn generate_executable_and_run() -> std::io::Result<()>{
+        generate_project_executable()?;
+        Command::new("./src/main")
+            .spawn()?;
         Ok(())
     }
 }
