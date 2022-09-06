@@ -87,6 +87,7 @@ $ rectx build
                 println!("rectx :: Execution failed!")
             }
         }
+        exit(0);
     }
 }
 
@@ -96,6 +97,9 @@ mod manager {
     use std::io::Write;
     use std::process::Command;
 
+    /// Generates a project directory containing the following:
+    /// 1. README.md (with project name)
+    /// 2. /src/main.rct (with hello world program)
     pub fn generate_project_directory(name: &String) -> std::io::Result<()> {
         fs::create_dir_all(name)?;
         fs::create_dir(format!("{}/src", name))?;
@@ -111,6 +115,7 @@ mod manager {
         Ok(())
     }
 
+    /// Uses rgoc to create an executable file from /src/main.rct
     pub fn generate_project_executable() -> std::io::Result<()> {
         // Getting source files
         let dir_paths = fs::read_dir("./src")?;
@@ -139,6 +144,8 @@ mod manager {
         Ok(())
     }
 
+    /// Generates an executable file using generate_project_executable()
+    /// and then runs the executable that's generated.
     pub fn generate_executable_and_run() -> std::io::Result<()>{
         generate_project_executable()?;
         Command::new("./src/main")
