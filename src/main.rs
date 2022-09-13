@@ -18,14 +18,20 @@ mod cli {
         arguments.remove(0);  // Drop application name ./rectx
 
 
-        for arg in &arguments {
-            match arg.as_str() {
+        if arguments.len() > 0 {
+            match arguments[0].as_str() {
                 "help" => help(),
-                "new" => new_project(&arguments),
+                "new" => if arguments.len() > 1 {
+                    new_project(&arguments)
+                } else {
+                    help_new()
+                },
                 "build" => build_project(),
                 "run" => run_project(),
-                _ => help()
+                _ => help_unknown()
             }
+        } else {
+            help()
         }
     }
 
@@ -33,20 +39,47 @@ mod cli {
     /// The help menu contains information on commands and flags, and what they do.
     pub fn help() {
         println!(
-            ":: ReCTx Help Menu ::
-ReCTx is a project manager for the ReCT programming language!
+            "ReCTx :: Help Menu
 
-Create a new project:
-$ rectx new project-name
+Usage: rectx <command> [options]
 
-Run the project:
-$ rectx run
+Commands:
+  help          -> shows this menu
+  new [name]    -> creates a new project
+  run           -> runs the current project
+  build         -> builds the current project
 
-Run the project:
-$ rectx build
-"
+For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
         );
         exit(0);
+    }
+
+    /// A specific help menu for the "new" command
+    /// Creating a new project using the new command: usage and explanation
+    pub fn help_new() {
+        println!(
+            "ReCTx :: Help Menu :: \"new\"
+
+Usage: rectx new project-name
+
+This command will create a new ReCT project with the name provided.
+The project will contain: /src/main.rs, README.md, and config.toml!
+
+For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
+        )
+    }
+
+    pub fn help_unknown() {
+        println!(
+            "ReCTX :: Help Menu :: Unknown
+
+Usage: rectx <command> [options]
+
+The command you have entered does not seem to exist!
+Use \"rectx help\" for more information on the commands you can use.
+
+For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
+        )
     }
 
     /// Creates a new project.
@@ -186,9 +219,9 @@ mod config {
             Ok(())
         }
 
-        pub fn load(path: String) -> std::io::Result<Config> {
+        /*pub fn load(path: String) -> std::io::Result<Config> {
             let data = fs::read(path)?;
             toml::from_slice(&*data)?
-        }
+        }*/
     }
 }
