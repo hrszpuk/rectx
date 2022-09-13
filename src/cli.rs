@@ -44,53 +44,6 @@ pub fn process_flags(args: std::env::Args) {
     }
 }
 
-/// Show help menu to the user.
-/// The help menu contains information on commands and flags, and what they do.
-pub fn help() {
-    println!(
-        "ReCTx :: Help Menu
-
-Usage: rectx <command> [options]
-
-Commands:
-  help          -> shows this menu
-  new [name]    -> creates a new project
-  run           -> runs the current project
-  build         -> builds the current project
-
-For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
-    );
-    exit(0);
-}
-
-/// A specific help menu for the "new" command.
-/// Creating a new project using the new command: usage and explanation.
-pub fn help_new() {
-    println!(
-        "ReCTx :: Help Menu :: \"new\"
-
-Usage: rectx new project-name
-
-This command will create a new ReCT project with the name provided.
-The project will contain: /src/main.rs, README.md, and config.toml!
-
-For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
-    )
-}
-
-pub fn help_unknown() {
-    println!(
-        "ReCTX :: Help Menu :: Unknown
-
-Usage: rectx <command> [options]
-
-The command you have entered does not seem to exist!
-Use \"rectx help\" for more information on the commands you can use.
-
-For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
-    )
-}
-
 /// Creates a new project.
 /// This is called when the user calls the command "new".
 pub fn new_project(args: &Vec<String>) {
@@ -149,4 +102,90 @@ pub fn run_project() {
         }
     }
     exit(0);
+}
+
+/// Use cli::success when a successful process has taken place
+pub fn success(message: &String) {
+    println!(
+        "[SUCCESS] {}", message
+    );
+}
+
+/// Use cli::process when a process has began (logging)
+pub fn process(message: &string) {
+    println!(
+        "::: {}", message
+    );
+}
+
+/// use cli::issue when an issue is found, but can be recovered
+pub fn issue(message: &String) {
+    println!(
+        ":!: {}", message
+    );
+}
+
+/// Use cli::abort when an unrecoverable issue is found (exits the program)
+pub fn abort(message: &String) {
+    println!(
+        "!!! {}", message
+    );
+    println!(
+        "[ABORT] An unrecoverable error caused rectx to abort!"
+    );
+    exit(2);
+}
+
+/// Use cli::info when wanting to give the user non-specific information
+pub fn info(message: &String) {
+    println!(
+        "[INFO] {}", message
+    );
+}
+
+/// Show help menu to the user.
+/// The help menu contains information on commands and flags, and what they do.
+pub fn help() {
+    println!(
+        "ReCTx :: Help Menu
+
+Usage: rectx <command> [options]
+
+Commands:
+  help          -> shows this menu
+  new [name]    -> creates a new project
+  run           -> runs the current project
+  build         -> builds the current project
+
+For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
+    );
+    exit(0);
+}
+
+/// A specific help menu for the "new" command.
+/// Creating a new project using the new command: usage and explanation.
+pub fn help_new() {
+    println!(
+        "ReCTx :: Help Menu :: \"new\"
+
+Usage: rectx new project-name
+
+This command will create a new ReCT project with the name provided.
+The project will contain: /src/main.rs, README.md, and config.toml!
+
+For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
+    )
+}
+
+pub fn help_unknown() {
+    println!(
+        "ReCTX :: Help Menu :: Unknown
+
+Usage: rectx <command> [options]
+
+The command you have entered does not seem to exist!
+Use \"rectx help\" for more information on the commands you can use.
+
+For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
+    )
 }
