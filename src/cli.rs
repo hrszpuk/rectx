@@ -1,15 +1,31 @@
+/**  Cli module
+*   This module manages the command line interface of rectx!
+*   Features:
+*   - Handling program arguments (commands and options)
+*   - Displaying help menus
+*   - Recognising commands and calling the correct functions
+ **/
+
 use std::process::exit;
 use crate::manager;
 
 /// Takes the command line arguments and calls the correct function.
 pub fn process_flags(args: std::env::Args) {
+
+    // Moving the program arguments into a custom vector.
+    // We do this so we can remove some parts of the program arguments
+    // such as the application name.
     let mut arguments = Vec::new();
     for arg in args {
         arguments.push(arg);
     }
-    arguments.remove(0);  // Drop application name ./rectx
 
+    // Drop application name ./rectx
+    arguments.remove(0);
 
+    // Here we just match for different commands
+    // and call the correct function.
+    // Example: "new" -> new_project()
     if arguments.len() > 0 {
         match arguments[0].as_str() {
             "help" => help(),
@@ -23,6 +39,7 @@ pub fn process_flags(args: std::env::Args) {
             _ => help_unknown()
         }
     } else {
+        // Here we call the help menu if we only encounter "rectx"
         help()
     }
 }
@@ -46,8 +63,8 @@ For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
     exit(0);
 }
 
-/// A specific help menu for the "new" command
-/// Creating a new project using the new command: usage and explanation
+/// A specific help menu for the "new" command.
+/// Creating a new project using the new command: usage and explanation.
 pub fn help_new() {
     println!(
         "ReCTx :: Help Menu :: \"new\"
@@ -78,9 +95,15 @@ For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
 /// This is called when the user calls the command "new".
 pub fn new_project(args: &Vec<String>) {
     if args.len() > 1 {
+
+        // Checking for errors
         match manager::generate_project_directory(&args[1]) {
+
+            // TODO: Add a cli::success or smth to handle outputs
             Ok(()) => println!("rectx :: Created new project \"{}\"!", args[1]),
             Err(error) => {
+
+                // TODO: Make error more explicit
                 println!("rectx :: Failed to create project \"{}\"!", args[1]);
                 println!("{:?}", error);
             },
@@ -92,10 +115,19 @@ pub fn new_project(args: &Vec<String>) {
 /// Builds the project in the current directory.
 /// This is called when the user calls the command "build".
 pub fn build_project() {
+
+    // TODO: Add more status messages to other functions (like below)
     println!("Building project!");
+
+    // Checking for errors
     match manager::generate_project_executable() {
+
+        // TODO: Success message here too...
         Ok(()) => println!("rectx :: Executable was generated successfully!"),
         Err(error) => {
+
+            // TODO: Better error handling (multi-types)
+            // TODO: Add ISSUE and ERROR cli handles
             println!("rectx :: Failed to generate executable!");
             println!("{:?}", error);
         }
@@ -106,7 +138,11 @@ pub fn build_project() {
 /// Runs the project in the current directory.
 /// This is called when the user calls the command "run".
 pub fn run_project() {
+
+    // Checking for errors
     match manager::generate_executable_and_run() {
+
+        // TODO: Again, CLI handles here, and better error handling
         Ok(()) => println!("rectx :: Executable was generated successfully!"),
         Err(error) => {
             println!("rectx :: Execution failed!")
