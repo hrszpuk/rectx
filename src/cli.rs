@@ -1,3 +1,6 @@
+use std::error::Error;
+use std::{fs, io};
+use std::io::{ErrorKind, stdout, Write};
 /**  Cli module
 *   This module manages the command line interface of rectx!
 *   Features:
@@ -8,6 +11,7 @@
 
 use std::process::exit;
 use crate::manager;
+use crate::manager::generate_project_directory;
 
 /// Takes the command line arguments and calls the correct function.
 pub fn process_flags(args: std::env::Args) {
@@ -29,11 +33,7 @@ pub fn process_flags(args: std::env::Args) {
     if arguments.len() > 0 {
         match arguments[0].as_str() {
             "help" => help(),
-            "new" => if arguments.len() > 1 {
-                new_project(&arguments)
-            } else {
-                help_new()
-            },
+            "new" => new_project(&arguments),
             "build" => build_project(),
             "run" => run_project(),
             _ => help_unknown()
@@ -49,18 +49,87 @@ pub fn process_flags(args: std::env::Args) {
 pub fn new_project(args: &Vec<String>) {
     if args.len() > 1 {
 
+        process(format!("Creating a new project named \"{}\"", args[1]));
+
         // Checking for errors
-        match manager::generate_project_directory(&args[1]) {
+        match generate_project_directory(&args[1]) {
 
-            // TODO: Add a cli::success or smth to handle outputs
-            Ok(()) => println!("rectx :: Created new project \"{}\"!", args[1]),
-            Err(error) => {
+            Ok(()) => success(format!("Created new project \"{}\"", args[1])),
+            Err(error) => match error.kind() {
 
-                // TODO: Make error more explicit
-                println!("rectx :: Failed to create project \"{}\"!", args[1]);
-                println!("{:?}", error);
-            },
+                    // Will occur if "main.rs" or "readme" fail to be created and
+                    // the write_all method is still triggered. This is unlikely,
+                    // but is handled anyway (just in case ofc).
+                    ErrorKind::NotFound => abort(
+                        String::from("A previously generated file could not be found!")
+                    ),
+
+                    // Will occur if rectx doesn't have permission to generate project files or folders
+                    // where the user requests it to be generated.
+                    // A common cause of this could be user attempting to create a new project in
+                    // administrator only directories (such as / on *nix).
+                    ErrorKind::PermissionDenied => abort(
+                        String::from(
+                            "Attempted to generate project entities but received permission denied!"
+                        )
+                    ),
+
+                    // Will occur if a directory of this name already exists.
+                    // Here we ask if the user would like to overwrite the directory,
+                    // and if not we simply abort
+                    ErrorKind::AlreadyExists => {
+                        issue(format!(
+                                "The directory \"{}\" already exists and therefore could not be generated!",
+                                args[1],
+                            ));
+
+                        // Here we ask about overwriting the directory
+                        let overwrite = question(
+                            format!("Would you like to overwrite the directory \"{}\"?", args[1])
+                        );
+                        if overwrite {
+
+                            // Of course overwriting could also error, in that case we abort
+                            process(String::from("Attempting to remove directory!"));
+                            match fs::remove_dir_all(&args[1]) {
+
+                                // Overwriting successful, we retry to create project
+                                Ok(()) => {
+                                    success(format!("Removed directory \"{}\"!", args[1]));
+                                    process(String::from("Retrying project creation..."));
+                                    generate_project_directory(&args[1])
+                                        .expect("!!! Project creation failed again... aborting!");
+                                    success(format!("Created new project \"{}\"", args[1]))
+                                },
+
+                                // Overwriting unsuccessful, quickly abort
+                                Err(_) => abort(
+                                    String::from("Attempt to overwrite directory failed!")
+                                )
+                            }
+                        } else {
+
+                            // This is if the user doesn't want to overwrite btw
+                            abort(
+                                String::from("Failed to generate project because directory already exists!")
+                            );
+                        }
+                    },
+                    ErrorKind::OutOfMemory => abort(
+                        format!(
+                            "Could not generate project files for \"{}\" because machine is out of memory!",
+                            args[1],
+                        )
+                    ),
+                    _ => abort(
+                        String::from(
+                            "Unable to recover from an unexpected error while generating new project!",
+                        )
+                    )
+                }
         };
+    } else {
+        help_new();
     }
     exit(0);
 }
@@ -97,7 +166,7 @@ pub fn run_project() {
 
         // TODO: Again, CLI handles here, and better error handling
         Ok(()) => println!("rectx :: Executable was generated successfully!"),
-        Err(error) => {
+        Err(_) => {
             println!("rectx :: Execution failed!")
         }
     }
@@ -105,42 +174,64 @@ pub fn run_project() {
 }
 
 /// Use cli::success when a successful process has taken place
-pub fn success(message: &String) {
+pub fn success(message: String) {
     println!(
         "[SUCCESS] {}", message
     );
 }
 
 /// Use cli::process when a process has began (logging)
-pub fn process(message: &string) {
+pub fn process(message: String) {
     println!(
         "::: {}", message
     );
 }
 
 /// use cli::issue when an issue is found, but can be recovered
-pub fn issue(message: &String) {
+pub fn issue(message: String) {
     println!(
         ":!: {}", message
     );
 }
 
 /// Use cli::abort when an unrecoverable issue is found (exits the program)
-pub fn abort(message: &String) {
+pub fn abort(message: String) {
     println!(
         "!!! {}", message
     );
     println!(
         "[ABORT] An unrecoverable error caused rectx to abort!"
     );
-    exit(2);
+    panic!();
 }
 
 /// Use cli::info when wanting to give the user non-specific information
-pub fn info(message: &String) {
+pub fn info(message: String) {
     println!(
         "[INFO] {}", message
     );
+}
+
+/// Use cli::question when wanting to get information from the user
+pub fn question(message: String) -> bool {
+    let mut buffer = String::new();
+
+    print!("{} [Y/n] ", message);
+    stdout().flush().unwrap();
+
+    match io::stdin().read_line(&mut buffer) {
+        Ok(_) => (),
+        Err(_) => abort(
+            format!(
+                "Attempted to question user but found unrecoverable error instead!"
+            )
+        )
+    }
+
+    match buffer.to_lowercase().trim() {
+        "y"|"yeah"|"yes"|"ye"|"yeet"|"yee" => true,
+        _ => false
+    }
 }
 
 /// Show help menu to the user.
