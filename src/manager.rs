@@ -9,6 +9,7 @@
 use std::{env, fs};
 use std::io::Write;
 use std::process::Command;
+use crate::cli;
 
 /// Generates a project directory containing the following:
 /// 1. README.md (with project name)
@@ -55,9 +56,10 @@ pub fn generate_project_executable() -> std::io::Result<()> {
 
     // Building file
     if paths.contains(&String::from("main.rct")) {
-        Command::new("rgoc")
+        let mut child = Command::new("rgoc")
             .arg("./src/main.rct")
             .spawn()?;
+        child.wait()?;
     } else {
         println!("rectx :: Could not find \"main.rct\" in \"/src\"!");
     }
@@ -70,7 +72,10 @@ pub fn generate_project_executable() -> std::io::Result<()> {
 pub fn generate_executable_and_run() -> std::io::Result<()>{
     generate_project_executable()?;
 
-    Command::new("./src/main")
+    cli::process(String::from("Running project executable"));
+
+    let mut child = Command::new("./src/main")
         .spawn()?;
+    child.wait()?;
     Ok(())
 }
