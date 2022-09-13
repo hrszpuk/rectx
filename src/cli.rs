@@ -1,4 +1,3 @@
-use std::error::Error;
 use std::{fs, io};
 use std::io::{ErrorKind, stdout, Write};
 /**  Cli module
@@ -57,76 +56,75 @@ pub fn new_project(args: &Vec<String>) {
             Ok(()) => success(format!("Created new project \"{}\"", args[1])),
             Err(error) => match error.kind() {
 
-                    // Will occur if "main.rs" or "readme" fail to be created and
-                    // the write_all method is still triggered. This is unlikely,
-                    // but is handled anyway (just in case ofc).
-                    ErrorKind::NotFound => abort(
-                        String::from("A previously generated file could not be found!")
-                    ),
+                // Will occur if "main.rs" or "readme" fail to be created and
+                // the write_all method is still triggered. This is unlikely,
+                // but is handled anyway (just in case ofc).
+                ErrorKind::NotFound => abort(
+                    String::from("A previously generated file could not be found!")
+                ),
 
-                    // Will occur if rectx doesn't have permission to generate project files or folders
-                    // where the user requests it to be generated.
-                    // A common cause of this could be user attempting to create a new project in
-                    // administrator only directories (such as / on *nix).
-                    ErrorKind::PermissionDenied => abort(
-                        String::from(
-                            "Attempted to generate project entities but received permission denied!"
-                        )
-                    ),
-
-                    // Will occur if a directory of this name already exists.
-                    // Here we ask if the user would like to overwrite the directory,
-                    // and if not we simply abort
-                    ErrorKind::AlreadyExists => {
-                        issue(format!(
-                                "The directory \"{}\" already exists and therefore could not be generated!",
-                                args[1],
-                            ));
-
-                        // Here we ask about overwriting the directory
-                        let overwrite = question(
-                            format!("Would you like to overwrite the directory \"{}\"?", args[1])
-                        );
-                        if overwrite {
-
-                            // Of course overwriting could also error, in that case we abort
-                            process(String::from("Attempting to remove directory!"));
-                            match fs::remove_dir_all(&args[1]) {
-
-                                // Overwriting successful, we retry to create project
-                                Ok(()) => {
-                                    success(format!("Removed directory \"{}\"!", args[1]));
-                                    process(String::from("Retrying project creation..."));
-                                    generate_project_directory(&args[1])
-                                        .expect("!!! Project creation failed again... aborting!");
-                                    success(format!("Created new project \"{}\"", args[1]))
-                                },
-
-                                // Overwriting unsuccessful, quickly abort
-                                Err(_) => abort(
-                                    String::from("Attempt to overwrite directory failed!")
-                                )
-                            }
-                        } else {
-
-                            // This is if the user doesn't want to overwrite btw
-                            abort(
-                                String::from("Failed to generate project because directory already exists!")
-                            );
-                        }
-                    },
-                    ErrorKind::OutOfMemory => abort(
-                        format!(
-                            "Could not generate project files for \"{}\" because machine is out of memory!",
-                            args[1],
-                        )
-                    ),
-                    _ => abort(
-                        String::from(
-                            "Unable to recover from an unexpected error while generating new project!",
-                        )
+                // Will occur if rectx doesn't have permission to generate project files or folders
+                // where the user requests it to be generated.
+                // A common cause of this could be user attempting to create a new project in
+                // administrator only directories (such as / on *nix).
+                ErrorKind::PermissionDenied => abort(
+                    String::from(
+                        "Attempted to generate project entities but received permission denied!"
                     )
-                }
+                ),
+
+                // Will occur if a directory of this name already exists.
+                // Here we ask if the user would like to overwrite the directory,
+                // and if not we simply abort
+                ErrorKind::AlreadyExists => {
+                    issue(format!(
+                        "The directory \"{}\" already exists and therefore could not be generated!",
+                        args[1],
+                    ));
+
+                    // Here we ask about overwriting the directory
+                    let overwrite = question(format!("Would you like to overwrite the directory \"{}\"?", args[1]));
+                    if overwrite {
+
+                        // Of course overwriting could also error, in that case we abort
+                        process(String::from("Attempting to remove directory!"));
+                        match fs::remove_dir_all(&args[1]) {
+
+                            // Overwriting successful, we retry to create project
+                            Ok(()) => {
+                                success(format!("Removed directory \"{}\"!", args[1]));
+                                process(String::from("Retrying project creation..."));
+                                generate_project_directory(&args[1]).expect("!!! Project creation failed again... aborting!");
+                                success(format!("Created new project \"{}\"", args[1]))
+                            },
+
+                            // Overwriting unsuccessful, quickly abort
+                            Err(_) => abort(
+                                String::from("Attempt to overwrite directory failed!")
+                            )
+                        }
+                    } else {
+
+                        // This is if the user doesn't want to overwrite btw
+                        abort(
+                            String::from("Failed to generate project because directory already exists!")
+                        );
+                    }
+                },
+                // Will occur if no more memory is avaiable on the user's machine
+                // as we allocate memory in generate_project_directory
+                ErrorKind::OutOfMemory => abort(
+                    format!(
+                        "Could not generate project files for \"{}\" because machine is out of memory!",
+                        args[1],
+                    )
+                ),
+                _ => abort(
+                    String::from(
+                        "Unable to recover from an unexpected error while generating new project!",
+                    )
+                )
+            }
         };
     } else {
         help_new();
@@ -138,21 +136,13 @@ pub fn new_project(args: &Vec<String>) {
 /// This is called when the user calls the command "build".
 pub fn build_project() {
 
-    // TODO: Add more status messages to other functions (like below)
-    println!("Building project!");
+    process(String::from("Building project executable"));
 
     // Checking for errors
     match manager::generate_project_executable() {
 
-        // TODO: Success message here too...
-        Ok(()) => println!("rectx :: Executable was generated successfully!"),
-        Err(error) => {
-
-            // TODO: Better error handling (multi-types)
-            // TODO: Add ISSUE and ERROR cli handles
-            println!("rectx :: Failed to generate executable!");
-            println!("{:?}", error);
-        }
+        Ok(()) => success(String::from("Executable generated!")),
+        Err(error) => generate_executable_error_handler(&error),
     }
     exit(0);
 }
@@ -161,16 +151,36 @@ pub fn build_project() {
 /// This is called when the user calls the command "run".
 pub fn run_project() {
 
+    process(String::from("Building project executable"));
+
     // Checking for errors
     match manager::generate_executable_and_run() {
 
-        // TODO: Again, CLI handles here, and better error handling
-        Ok(()) => println!("rectx :: Executable was generated successfully!"),
-        Err(_) => {
-            println!("rectx :: Execution failed!")
-        }
+        Ok(()) => success(String::from("Generated executable and ran without issues!")),
+        Err(error) => generate_executable_error_handler(&error),
     }
     exit(0);
+}
+
+/// run_project() and build_project() both call the same functions
+/// therefore can both return the same kind of errors.
+/// Instead of repeating the code below twice I instead created a function to handle
+/// the error kind for both run_project() and build_project()
+fn generate_executable_error_handler(error: &io::Error) {
+    match error.kind() {
+        ErrorKind::NotFound => abort(
+            String::from("Could not generate executable as source file(s) could not be found!")
+        ),
+        ErrorKind::PermissionDenied => abort(
+            String::from("Could not generate executable due to lack of permissions!")
+        ),
+        ErrorKind::OutOfMemory => abort(
+            String::from("Could not generate executable as machine is out of memory!")
+        ),
+        _ => abort(
+            String::from("Unexpected unrecoverable error occurred while generating project executable!")
+        ),
+    }
 }
 
 /// Use cli::success when a successful process has taken place
