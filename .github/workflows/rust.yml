@@ -1,0 +1,34 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "master", "develop" ]
+  pull_request:
+    branches: [ "master", "develop" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_and_test:
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
+    - name: Help menu
+      run: ./target/release/rectx --help
+    - name: Create project
+      run: ./target/debug/rectx new test
+    - name: Create project
+      run: ./target/debug/rectx new test
+    - name: Build project
+      run: 
+        cd ./target/debug/rectx/test
+        ../rectx build
+    - name: Run project
+      run: ../rectx run
