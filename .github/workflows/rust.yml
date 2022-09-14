@@ -27,8 +27,6 @@ jobs:
     - name: Create project
       run: ./target/debug/rectx new test
     - name: Build project
-      run: 
-        cd ./target/debug/rectx/test
-        ../rectx build
+      run: cd ./target/debug/rectx/test && ../rectx build
     - name: Run project
       run: ../rectx run
