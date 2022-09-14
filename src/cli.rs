@@ -11,6 +11,7 @@ use std::io::{ErrorKind, stdout, Write};
 use std::process::exit;
 use crate::manager;
 use crate::manager::generate_project_directory;
+use crate::config::Config;
 
 /// Takes the command line arguments and calls the correct function.
 pub fn process_flags(args: std::env::Args) {
@@ -33,8 +34,8 @@ pub fn process_flags(args: std::env::Args) {
         match arguments[0].as_str() {
             "help" => help(),
             "new" => new_project(&arguments),
-            "build" => build_project(),
-            "run" => run_project(),
+            "build" => build_project(false),
+            "run" => build_project(true),
             _ => help_unknown()
         }
     } else {
@@ -134,53 +135,31 @@ pub fn new_project(args: &Vec<String>) {
 
 /// Builds the project in the current directory.
 /// This is called when the user calls the command "build".
-pub fn build_project() {
+/// This also handles running the executable with argument "run"
+pub fn build_project(run: bool) {
 
     process(String::from("Building project executable"));
 
     // Checking for errors
-    match manager::generate_project_executable() {
+    match manager::generate_project_executable(run) {
 
-        Ok(()) => success(String::from("Executable generated!")),
-        Err(error) => generate_executable_error_handler(&error),
+        Ok(()) => success(String::from("Executable was successful!")),
+        Err(error) => match error.kind() {
+            ErrorKind::NotFound => abort(
+                String::from("Could not generate executable as source file(s) could not be found!")
+            ),
+            ErrorKind::PermissionDenied => abort(
+                String::from("Could not generate executable due to lack of permissions!")
+            ),
+            ErrorKind::OutOfMemory => abort(
+                String::from("Could not generate executable as machine is out of memory!")
+            ),
+            _ => abort(
+                String::from("Unexpected unrecoverable error occurred while generating project executable!")
+            ),
+        },
     }
     exit(0);
-}
-
-/// Runs the project in the current directory.
-/// This is called when the user calls the command "run".
-pub fn run_project() {
-
-    process(String::from("Building project executable"));
-
-    // Checking for errors
-    match manager::generate_executable_and_run() {
-
-        Ok(()) => success(String::from("Generated executable and ran without issues!")),
-        Err(error) => generate_executable_error_handler(&error),
-    }
-    exit(0);
-}
-
-/// run_project() and build_project() both call the same functions
-/// therefore can both return the same kind of errors.
-/// Instead of repeating the code below twice I instead created a function to handle
-/// the error kind for both run_project() and build_project()
-fn generate_executable_error_handler(error: &io::Error) {
-    match error.kind() {
-        ErrorKind::NotFound => abort(
-            String::from("Could not generate executable as source file(s) could not be found!")
-        ),
-        ErrorKind::PermissionDenied => abort(
-            String::from("Could not generate executable due to lack of permissions!")
-        ),
-        ErrorKind::OutOfMemory => abort(
-            String::from("Could not generate executable as machine is out of memory!")
-        ),
-        _ => abort(
-            String::from("Unexpected unrecoverable error occurred while generating project executable!")
-        ),
-    }
 }
 
 /// Use cli::success when a successful process has taken place
