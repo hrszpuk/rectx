@@ -16,13 +16,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
-    - name: Clean
-      run: rm ./target/debug/rectx/test -rf
     - name: Build
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
-    - name: Help menu
-      run: ./target/debug/rectx --help
-    - name: Create project, build, and run
-      run: ./target/debug/rectx new test && cd ./target/debug/test && ../rectx run
