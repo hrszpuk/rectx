@@ -46,9 +46,9 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
     let conf = Config::load("config.toml");
     let mut profile = if run { conf.run } else { conf.build };
 
-    let main = format!("{}/{}", profile.source_dir, profile.source_main);
+    let main = format!("{}/{}", &profile.source_dir, &profile.source_main);
 
-    let dir_paths = fs::read_dir(profile.source_dir)?;
+    let dir_paths = fs::read_dir(&profile.source_dir)?;
 
     // Functional control flow magic
     let mut paths = dir_paths.filter_map(|entry| {
@@ -60,7 +60,7 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
 
     // Building file
     if paths.contains(&profile.source_main) {
-        let mut child = Command::new(profile.compiler);
+        let mut child = Command::new(&profile.compiler);
         for flag in profile.compiler_flags {
             child.arg(&flag);
         }
@@ -71,8 +71,8 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
     } else {
         cli::abort(format!(
             "Failed to find target \"{}\" in source directory \"{}\"!",
-            profile.source_main,
-            profile.source_dir,
+            &profile.source_main,
+            &profile.source_dir,
         ))
     }
 
@@ -80,7 +80,7 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
         cli::process("Running project executable".to_string());
 
         let mut child = Command::new(
-            format!("./{}/{}", profile.output_dir, profile.output_name)
+            format!("./{}/{}", &conf.project.target, &profile.output_name)
         )
             .spawn()?;
         child.wait()?;

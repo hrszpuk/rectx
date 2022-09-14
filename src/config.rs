@@ -30,6 +30,8 @@ pub struct Project {
     pub version: String,
     pub authors: Vec<String>,
     pub remote: String,
+    pub target: String,
+    pub dependencies: String,
 }
 
 /// Stores information about compilation profiles
@@ -40,7 +42,6 @@ pub struct Profile {
     pub compiler_flags: Vec<String>,
     pub source_dir: String,
     pub source_main: String,
-    pub output_dir: String,
     pub output_name: String,
 }
 
@@ -55,13 +56,14 @@ impl Config {
                 version: String::from("0.1.0"),
                 authors: vec![],
                 remote: String::from(""),
+                target: "target".to_string(),
+                dependencies: "deps".to_string()
             },
             build: Profile {
                 compiler: String::from("rgoc"),
                 compiler_flags: vec!["-xx".to_string(), "-O".to_string()],
                 source_dir: String::from("src"),
                 source_main: String::from("main.rct"),
-                output_dir: String::from("target/build"),
                 output_name: name.clone(),
             },
             run: Profile {
@@ -69,7 +71,6 @@ impl Config {
                 compiler_flags: vec!["-xx".to_string()],
                 source_dir: String::from("src"),
                 source_main: String::from("main.rct"),
-                output_dir: String::from("target/run"),
                 output_name: name.clone(),
             }
         }
