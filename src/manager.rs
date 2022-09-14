@@ -10,6 +10,7 @@ use std::{env, fs};
 use std::io::Write;
 use std::process::Command;
 use crate::cli;
+use crate::config;
 
 /// Generates a project directory containing the following:
 /// 1. README.md (with project name)
@@ -29,6 +30,9 @@ pub fn generate_project_directory(name: &String) -> std::io::Result<()> {
 
     let mut readme = fs::File::create(format!("{}/README.md", name))?;
     readme.write_all(format!("# {}\n", name).as_ref())?;
+
+    let mut conf = config::Config::new(name);
+    conf.generate(name).expect("TODO: panic message");
 
     Ok(())
 }

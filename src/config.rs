@@ -48,7 +48,7 @@ impl Config {
 
     /// Simple constructor for Config struct
     /// Generates default config values for a new binary project
-    pub fn new(name: String) -> Config {
+    pub fn new(name: &String) -> Config {
         Config {
             project: Project {
                 name: name.clone(),
@@ -76,13 +76,13 @@ impl Config {
     }
 
     /// Generates a config.toml file from the Config struct
-    pub fn generate(&self, path: String) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn generate(&self, path: &String) -> Result<(), Box<dyn std::error::Error>> {
 
         // Serialises the config struct into a toml string
         let toml_data = toml::to_string(&self)?;
 
         // Finally, we create the config.toml with our config data
-        fs::write(path + "/config.toml", toml_data)?;
+        fs::write(format!("{}/config.toml", path), toml_data)?;
         Ok(())
     }
 

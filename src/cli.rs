@@ -36,10 +36,6 @@ pub fn process_flags(args: std::env::Args) {
             "new" => new_project(&arguments),
             "build" => build_project(),
             "run" => run_project(),
-            "config" => {
-                let mut conf = Config::new(String::from("test"));
-                conf.generate(String::from(".")).expect("aaaa");
-            }
             _ => help_unknown()
         }
     } else {
