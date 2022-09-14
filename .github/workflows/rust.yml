@@ -21,7 +21,7 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
     - name: Help menu
-      run: ./target/release/rectx --help
+      run: ./target/debug/rectx --help
     - name: Create project
       run: ./target/debug/rectx new test
     - name: Create project
