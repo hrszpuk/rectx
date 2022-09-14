@@ -16,9 +16,9 @@ use serde_derive::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
     pub project: Project,
-    #[serde(rename(serialize = "profile-build", deserialize = "build"))]
+    #[serde(rename(serialize = "profile-build", deserialize = "profile-build"))]
     pub build: Profile,
-    #[serde(rename(serialize = "profile-run", deserialize = "run"))]
+    #[serde(rename(serialize = "profile-run", deserialize = "profile-run"))]
     pub run: Profile,
 }
 
@@ -86,8 +86,12 @@ impl Config {
         Ok(())
     }
 
-    /*pub fn load(path: String) -> std::io::Result<Config> {
-        let data = fs::read(path)?;
-        toml::from_slice(&*data)?
-    }*/
+    /// Reads the contents of a config.toml and converts it into a config struct
+    pub fn load(path: &str) -> Config {
+
+        // TODO: config module errors
+        let mut contents = fs::read_to_string(path).unwrap();
+        let data = toml::from_str(contents.as_str()).unwrap();
+        data
+    }
 }
