@@ -11,6 +11,7 @@ use std::io::{ErrorKind, stdout, Write};
 use std::process::exit;
 use crate::manager;
 use crate::manager::generate_project_directory;
+use crate::config::Config;
 
 /// Takes the command line arguments and calls the correct function.
 pub fn process_flags(args: std::env::Args) {
@@ -35,6 +36,10 @@ pub fn process_flags(args: std::env::Args) {
             "new" => new_project(&arguments),
             "build" => build_project(),
             "run" => run_project(),
+            "config" => {
+                let mut conf = Config::new(String::from("test"));
+                conf.generate(String::from(".")).expect("aaaa");
+            }
             _ => help_unknown()
         }
     } else {
