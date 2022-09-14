@@ -7,9 +7,12 @@
 **/
 
 use std::{env, fs};
+use std::error::Error;
 use std::io::Write;
 use std::process::Command;
 use crate::cli;
+use crate::config;
+use crate::config::Config;
 
 /// Generates a project directory containing the following:
 /// 1. README.md (with project name)
@@ -30,52 +33,58 @@ pub fn generate_project_directory(name: &String) -> std::io::Result<()> {
     let mut readme = fs::File::create(format!("{}/README.md", name))?;
     readme.write_all(format!("# {}\n", name).as_ref())?;
 
+    let mut conf = Config::new(name);
+    conf.generate(name).expect("TODO: panic message");
+
     Ok(())
 }
 
 /// Uses rgoc to create an executable file from /src/main.rct
-pub fn generate_project_executable() -> std::io::Result<()> {
+pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
 
-    // Getting source files
-    let dir_paths = fs::read_dir("./src")?;
-    let mut paths = Vec::new();
+    // Load config file
+    let conf = Config::load("config.toml");
+    let mut profile = if run { conf.run } else { conf.build };
 
-    for path in dir_paths {
+    let main = format!("{}/{}", &profile.source_dir, &profile.source_main);
 
-        // TODO: check if file is rect file (.rct)
-        let x = path?.file_name();
-        let x = match x.into_string() {
-            Ok(filename) => filename,
-            Err(error) => {
-                println!("{:?}", error);
-                String::new()
-            }
-        };
-        paths.push(x);
-    }
+    let dir_paths = fs::read_dir(&profile.source_dir)?;
+
+    // Functional control flow magic
+    let mut paths = dir_paths.filter_map(|entry| {
+        entry.ok().and_then(|e|
+            e.path().file_name()
+                .and_then(|n| n.to_str().map(|s| String::from(s)))
+        )
+    }).collect::<Vec<String>>();
 
     // Building file
-    if paths.contains(&String::from("main.rct")) {
-        let mut child = Command::new("rgoc")
-            .arg("./src/main.rct")
-            .spawn()?;
-        child.wait()?;
+    if paths.contains(&profile.source_main) {
+        let mut child = Command::new(&profile.compiler);
+        for flag in profile.compiler_flags {
+            child.arg(&flag);
+        }
+        child
+            .arg(&main)
+            .spawn()?
+            .wait()?;
     } else {
-        println!("rectx :: Could not find \"main.rct\" in \"/src\"!");
+        cli::abort(format!(
+            "Failed to find target \"{}\" in source directory \"{}\"!",
+            &profile.source_main,
+            &profile.source_dir,
+        ))
     }
 
-    Ok(())
-}
+    if run {
+        cli::process("Running project executable".to_string());
 
-/// Generates an executable file using generate_project_executable()
-/// and then runs the executable that's generated.
-pub fn generate_executable_and_run() -> std::io::Result<()>{
-    generate_project_executable()?;
+        let mut child = Command::new(
+            format!("./{}/{}", &conf.project.target, &profile.output_name)
+        )
+            .spawn()?;
+        child.wait()?;
+    }
 
-    cli::process(String::from("Running project executable"));
-
-    let mut child = Command::new("./src/main")
-        .spawn()?;
-    child.wait()?;
     Ok(())
 }
