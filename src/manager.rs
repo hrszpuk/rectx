@@ -8,20 +8,23 @@
 
 use std::{env, fs};
 use std::error::Error;
+use std::fmt::Debug;
+use std::fs::{DirEntry, ReadDir};
 use std::io::Write;
+use std::path::Path;
 use std::process::Command;
 use crate::cli;
 use crate::config;
-use crate::config::Config;
+use crate::config::{Config, Profile};
 
 /// Generates a project directory containing the following:
 /// 1. README.md (with project name)
 /// 2. /src/main.rct (with hello world program)
 pub fn generate_project_directory(name: &String) -> std::io::Result<()> {
 
-    // We generate a few directories: /{name} and /{name}/src
-    fs::create_dir_all(name)?;
-    fs::create_dir(format!("{}/src", name))?;
+    // We generate a few directories: {name}/, {name}/src/, and {name}/deps/
+    fs::create_dir_all(format!("{}/src", name))?;
+    fs::create_dir(format!("{}/deps", name))?;
 
     // Here we create main.rct and README.md files
     // We also write basic text to these files:
@@ -33,8 +36,9 @@ pub fn generate_project_directory(name: &String) -> std::io::Result<()> {
     let mut readme = fs::File::create(format!("{}/README.md", name))?;
     readme.write_all(format!("# {}\n", name).as_ref())?;
 
+    // Generate a new config file
     let mut conf = Config::new(name);
-    conf.generate(name).expect("TODO: panic message");
+    conf.generate(name)?;
 
     Ok(())
 }
@@ -44,9 +48,23 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
 
     // Load config file
     let conf = Config::load("config.toml");
-    let mut profile = if run { conf.run } else { conf.build };
+    let mut profile: Profile;
+    let mut profile_name: String;
+    if run {
+        profile = conf.run;
+        profile_name = String::from("run");
+    } else {
+        profile = conf.build;
+        profile_name = String::from("build");
+    };
+
+    let build_path = format!("{}/{}", &conf.project.target, &profile_name);
 
     let main = format!("{}/{}", &profile.source_dir, &profile.source_main);
+
+    if !Path::new(&build_path).exists() {
+        fs::create_dir_all(&build_path)?;
+    }
 
     let dir_paths = fs::read_dir(&profile.source_dir)?;
 
@@ -65,6 +83,7 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
             child.arg(&flag);
         }
         child
+            .arg(format!("-o={}/{}/{}", &conf.project.target, &profile_name, &profile.output_name))
             .arg(&main)
             .spawn()?
             .wait()?;
@@ -80,7 +99,7 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
         cli::process("Running project executable".to_string());
 
         let mut child = Command::new(
-            format!("./{}/{}", &conf.project.target, &profile.output_name)
+            format!("./{}/{}/{}", &conf.project.target, &profile_name, &profile.output_name)
         )
             .spawn()?;
         child.wait()?;

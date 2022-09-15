@@ -9,6 +9,7 @@
 use std::fs;
 use std::process::exit;
 use serde_derive::{Deserialize, Serialize};
+use crate::cli;
 
 
 /// Config structure will store all the contents within
@@ -77,10 +78,18 @@ impl Config {
     }
 
     /// Generates a config.toml file from the Config struct
-    pub fn generate(&self, path: &String) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn generate(&self, path: &String) -> std::io::Result<()> {
 
         // Serialises the config struct into a toml string
-        let toml_data = toml::to_string(&self)?;
+        let toml_data = match toml::to_string(&self) {
+            Ok(data) => data,
+            Err(error) => {
+                cli::abort(
+                    "Failed to serialize Config data!".to_string()
+                );
+                panic!();  // This is never reached because cli::abort() handles panics
+            },
+        };
 
         // Finally, we create the config.toml with our config data
         fs::write(format!("{}/config.toml", path), toml_data)?;
