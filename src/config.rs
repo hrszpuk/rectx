@@ -10,6 +10,8 @@ use std::fs;
 use std::process::exit;
 use serde_derive::{Deserialize, Serialize};
 
+use crate::cli::abort;
+
 
 /// Config structure will store all the contents within
 /// the config.toml so Manager can use it turning compilation.
@@ -91,7 +93,18 @@ impl Config {
     pub fn load(path: &str) -> Config {
 
         // TODO: config module errors
-        let mut contents = fs::read_to_string(path).unwrap();
+        let metadata = fs::metadata(path);
+        if !metadata.is_ok() {
+            abort(
+                String::from("Coudn't find a project configuration!")
+            );
+        } else if metadata.unwrap().is_dir() {
+            abort(
+                String::from("Project configuration is a folder?!?")
+            );
+        }
+
+        let contents = fs::read_to_string(path).unwrap();
         let data = toml::from_str(contents.as_str()).unwrap();
         data
     }
