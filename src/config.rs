@@ -7,7 +7,6 @@
  **/
 
 use std::fs;
-use std::process::exit;
 use serde_derive::{Deserialize, Serialize};
 use crate::cli;
 
@@ -83,7 +82,7 @@ impl Config {
         // Serialises the config struct into a toml string
         let toml_data = match toml::to_string(&self) {
             Ok(data) => data,
-            Err(error) => {
+            Err(_) => {
                 cli::abort(
                     "Failed to serialize Config data!".to_string()
                 );
@@ -100,7 +99,7 @@ impl Config {
     pub fn load(path: &str) -> Config {
 
         // TODO: config module errors
-        let mut contents = fs::read_to_string(path).unwrap();
+        let contents = fs::read_to_string(path).unwrap();
         let data = toml::from_str(contents.as_str()).unwrap();
         data
     }

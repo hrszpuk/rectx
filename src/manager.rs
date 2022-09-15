@@ -6,15 +6,11 @@
  *   - Running projects
 **/
 
-use std::{env, fs};
-use std::error::Error;
-use std::fmt::Debug;
-use std::fs::{DirEntry, ReadDir};
+use std::fs;
 use std::io::Write;
 use std::path::Path;
 use std::process::Command;
 use crate::cli;
-use crate::config;
 use crate::config::{Config, Profile};
 
 /// Generates a project directory containing the following:
@@ -37,7 +33,7 @@ pub fn generate_project_directory(name: &String) -> std::io::Result<()> {
     readme.write_all(format!("# {}\n", name).as_ref())?;
 
     // Generate a new config file
-    let mut conf = Config::new(name);
+    let conf = Config::new(name);
     conf.generate(name)?;
 
     Ok(())
@@ -48,8 +44,8 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
 
     // Load config file
     let conf = Config::load("config.toml");
-    let mut profile: Profile;
-    let mut profile_name: String;
+    let profile: Profile;
+    let profile_name: String;
     if run {
         profile = conf.run;
         profile_name = String::from("run");
@@ -69,7 +65,7 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
     let dir_paths = fs::read_dir(&profile.source_dir)?;
 
     // Functional control flow magic
-    let mut paths = dir_paths.filter_map(|entry| {
+    let paths = dir_paths.filter_map(|entry| {
         entry.ok().and_then(|e|
             e.path().file_name()
                 .and_then(|n| n.to_str().map(|s| String::from(s)))
