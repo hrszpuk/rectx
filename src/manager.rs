@@ -35,7 +35,10 @@ pub fn generate_project_directory(name: &String) -> std::io::Result<()> {
 
     // Generate a new config file
     let conf = Config::new(name);
-    conf.generate(name)?;
+    match conf.generate(name) {
+        Ok(_) => {},
+        Err(_) => cli::abort("Was unable to generate config file!".to_string())
+    };
 
     Ok(())
 }

@@ -7,7 +7,6 @@
  **/
 
 use std::fs;
-use std::process::exit;
 use serde_derive::{Deserialize, Serialize};
 use crate::cli;
 
