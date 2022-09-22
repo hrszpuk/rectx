@@ -7,6 +7,7 @@
  **/
 
 use std::fs;
+use std::process::exit;
 use serde_derive::{Deserialize, Serialize};
 use crate::cli;
 
@@ -77,18 +78,10 @@ impl Config {
     }
 
     /// Generates a config.toml file from the Config struct
-    pub fn generate(&self, path: &String) -> std::io::Result<()> {
+    pub fn generate(&self, path: &String) -> Result<(), Box<dyn std::error::Error>> {
 
         // Serialises the config struct into a toml string
-        let toml_data = match toml::to_string(&self) {
-            Ok(data) => data,
-            Err(_) => {
-                cli::abort(
-                    "Failed to serialize Config data!".to_string()
-                );
-                panic!();  // This is never reached because cli::abort() handles panics
-            },
-        };
+        let toml_data = toml::to_string(&self)?;
 
         // Finally, we create the config.toml with our config data
         fs::write(format!("{}/config.toml", path), toml_data)?;
@@ -99,6 +92,17 @@ impl Config {
     pub fn load(path: &str) -> Config {
 
         // TODO: config module errors
+        let metadata = fs::metadata(path);
+        if !metadata.is_ok() {
+            cli::abort(
+                String::from("Coudn't find a project configuration!")
+            );
+        } else if metadata.unwrap().is_dir() {
+            cli::abort(
+                String::from("Project configuration is a folder?!?")
+            );
+        }
+
         let contents = fs::read_to_string(path).unwrap();
         let data = toml::from_str(contents.as_str()).unwrap();
         data
