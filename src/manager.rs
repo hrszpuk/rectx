@@ -10,6 +10,7 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 use std::process::Command;
+use fs_extra::dir::CopyOptions;
 use crate::cli;
 use crate::config::{Config, Profile};
 
@@ -89,6 +90,16 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
             &profile.source_main,
             &profile.source_dir,
         ))
+    }
+
+    // Moving dependencies into target
+    match fs_extra::dir::copy(
+        &conf.project.dependencies,
+        format!("{}/{}", &conf.project.target, &profile_name),
+        &CopyOptions::new(),
+    ) {
+        Ok(_) => println!("Moved dependencies into target successfully!"),
+        Err(_) => cli::abort("Unable to move dependencies!".to_string()),
     }
 
     if run {
