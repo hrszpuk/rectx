@@ -12,6 +12,7 @@ use std::path::Path;
 use std::process::Command;
 use fs_extra::dir::CopyOptions;
 use crate::cli;
+use crate::cli::abort;
 use crate::config::{Config, Profile};
 
 /// Generates a project directory containing the following:
@@ -19,18 +20,21 @@ use crate::config::{Config, Profile};
 /// 2. /src/main.rct (with hello world program)
 pub fn generate_project_directory(name: &String) -> std::io::Result<()> {
 
+    let path = Path::new(name);
+    let src_path = path.join("src");
+
     // We generate a few directories: {name}/, {name}/src/, and {name}/deps/
-    fs::create_dir_all(format!("{}/src", name))?;
-    fs::create_dir(format!("{}/deps", name))?;
+    fs::create_dir_all(src_path)?;
+    fs::create_dir(path.join("deps"))?;
 
     // Here we create main.rct and README.md files
     // We also write basic text to these files:
     // - main.rct: hello world program
     // - README.md: project title
-    let mut main = fs::File::create(format!("{}/src/main.rct", name))?;
+    let mut main = fs::File::create(src_path.join("main.rct"))?;
     main.write_all(b"package sys;\n\nsys::Print(\"Hello, World!\");\n")?;
 
-    let mut readme = fs::File::create(format!("{}/README.md", name))?;
+    let mut readme = fs::File::create(path.join("README.md"))?;
     readme.write_all(format!("# {}\n", name).as_ref())?;
 
     // Generate a new config file
@@ -58,9 +62,11 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
         profile_name = String::from("build");
     };
 
-    let build_path = format!("{}/{}", &conf.project.target, &profile_name);
+    let build_path = Path::new(&conf.project.target)
+        .join(&profile_name);
 
-    let main = format!("{}/{}", &profile.source_dir, &profile.source_main);
+    let main = Path::new(&profile.source_dir)
+        .join(&profile.source_main);
 
     if !Path::new(&build_path).exists() {
         fs::create_dir_all(&build_path)?;
@@ -82,8 +88,13 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
         for flag in profile.compiler_flags {
             child.arg(&flag);
         }
+        let output_path = Path::new(&conf.project.target)
+            .join(&profile_name)
+            .join(&profile.output_name);
+        // if .to_string() fails we'll have to convert the format ourselves
+
         child
-            .arg(format!("-o={}/{}/{}", &conf.project.target, &profile_name, &profile.output_name))
+            .arg(format!("-o={}", output_path))
             .arg(&main)
             .spawn()?
             .wait()?;
