@@ -7,10 +7,8 @@
  **/
 
 use std::fs;
-use std::process::exit;
 use serde_derive::{Deserialize, Serialize};
-
-use crate::cli::abort;
+use crate::cli;
 
 
 /// Config structure will store all the contents within
@@ -95,11 +93,11 @@ impl Config {
         // TODO: config module errors
         let metadata = fs::metadata(path);
         if !metadata.is_ok() {
-            abort(
+            cli::abort(
                 String::from("Coudn't find a project configuration!")
             );
         } else if metadata.unwrap().is_dir() {
-            abort(
+            cli::abort(
                 String::from("Project configuration is a folder?!?")
             );
         }
