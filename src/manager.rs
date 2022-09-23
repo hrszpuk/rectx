@@ -12,7 +12,6 @@ use std::path::Path;
 use std::process::Command;
 use fs_extra::dir::CopyOptions;
 use crate::cli;
-use crate::cli::abort;
 use crate::config::{Config, Profile};
 
 /// Generates a project directory containing the following:
@@ -24,7 +23,7 @@ pub fn generate_project_directory(name: &String) -> std::io::Result<()> {
     let src_path = path.join("src");
 
     // We generate a few directories: {name}/, {name}/src/, and {name}/deps/
-    fs::create_dir_all(src_path)?;
+    fs::create_dir_all(src_path.clone())?;
     fs::create_dir(path.join("deps"))?;
 
     // Here we create main.rct and README.md files
@@ -88,13 +87,14 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
         for flag in profile.compiler_flags {
             child.arg(&flag);
         }
-        let output_path = Path::new(&conf.project.target)
-            .join(&profile_name)
-            .join(&profile.output_name);
-        // if .to_string() fails we'll have to convert the format ourselves
+        let output_path = if std::env::consts::OS == "windows" {
+            format!("{}\\{}\\{}", &conf.project.target, &profile_name, &profile.output_name)
+        } else {
+            format!("{}/{}/{}", &conf.project.target, &profile_name, &profile.output_name)
+        };
 
         child
-            .arg(format!("-o={}", output_path))
+            .arg(format!("-o={}", &output_path))
             .arg(&main)
             .spawn()?
             .wait()?;
@@ -120,7 +120,7 @@ pub fn generate_project_executable(run: bool) -> std::io::Result<()> {
         cli::process("Running project executable".to_string());
 
         let mut child = Command::new(
-            format!("./{}/{}/{}", &conf.project.target, &profile_name, &profile.output_name)
+            Path::new(&conf.project.target).join(&profile_name).join(&profile.output_name)
         )
             .spawn()?;
         child.wait()?;
