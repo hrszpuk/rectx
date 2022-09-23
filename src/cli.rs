@@ -1,5 +1,3 @@
-use std::{fs, io};
-use std::io::{ErrorKind, stdout, Write};
 /**  Cli module
 *   This module manages the command line interface of rectx!
 *   Features:
@@ -7,8 +5,10 @@ use std::io::{ErrorKind, stdout, Write};
 *   - Displaying help menus
 *   - Recognising commands and calling the correct functions
  **/
-
+use std::{fs, io};
+use std::io::{ErrorKind, stdout, Write};
 use std::process::exit;
+use colored::Colorize;
 use crate::manager;
 use crate::manager::generate_project_directory;
 
@@ -226,20 +226,44 @@ pub fn question(message: String) -> bool {
 /// Show help menu to the user.
 /// The help menu contains information on commands and flags, and what they do.
 pub fn help() {
-    println!(
-        "ReCTx :: Help Menu
+    let title = "ReCTx Project Manager";
+    let version = "v1.0.0";
+    let mut dashes = String::new();
+    for _ in 0..(title.len()+version.len()+2) {
+        dashes.push('-');
+    }
+    println!("{}\n{} {}\n{}\n{} {}\n\n{}",
+             dashes, title.bold(), version.green(),
+             dashes, "Usage:".bold(),
+             "rectx <command>".bright_green(),
+             "[Commands]".bold());
+    for (name, example, description) in help_commands() {
+        println!(
+            "{}\t {} {}\t {} {}",
+            name.bold().bright_cyan(),
+            ":".black(),
+            example.bold().bright_blue(),
+            ":".black(),
+            description.bold().bright_green(),
+        )
+    }
 
-Usage: rectx <command> [options]
-
-Commands:
-  help          -> shows this menu
-  new [name]    -> creates a new project
-  run           -> runs the current project
-  build         -> builds the current project
-
-For more information visit the GitHub page: https://github.com/hrszpuk/rectx"
-    );
+    println!("\n{}{}",
+             "For more information check out the GitHub page: ".bold(),
+             "https://github.com/hrszpuk/rectx".bright_blue());
+    println!("{} {}",
+    "or join the ReCT Discord server:".bold(),
+    "https://discord.gg/Ymm9xGxWZf".bright_blue());
     exit(0);
+}
+
+pub fn help_commands() -> Vec<(&'static str, &'static str, &'static str)> {
+    vec![
+        ("Help", "rectx help", "Shows this help message."),
+        ("New", "rectx new", "Creates a new ReCTx project."),
+        ("Build", "rectx build", "Builds the current ReCTx project."),
+        ("Run", "rectx run", "Runs the current ReCTx project.")
+    ]
 }
 
 /// A specific help menu for the "new" command.
