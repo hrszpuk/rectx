@@ -11,7 +11,6 @@ use std::io::{ErrorKind, stdout, Write};
 use std::process::exit;
 use crate::manager;
 use crate::manager::generate_project_directory;
-use crate::config::Config;
 
 /// Takes the command line arguments and calls the correct function.
 pub fn process_flags(args: std::env::Args) {
@@ -195,6 +194,7 @@ pub fn abort(message: String) {
 }
 
 /// Use cli::info when wanting to give the user non-specific information
+#[allow(dead_code)]
 pub fn info(message: String) {
     println!(
         "[INFO] {}", message
