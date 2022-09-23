@@ -83,7 +83,7 @@ impl Config {
         let toml_data = toml::to_string(&self)?;
 
         // Finally, we create the config.toml with our config data
-        fs::write(format!("{}/config.toml", path), toml_data)?;
+        fs::write(std::path::Path::new(path).join("config.toml"), toml_data)?;
         Ok(())
     }
 
@@ -94,7 +94,7 @@ impl Config {
         let metadata = fs::metadata(path);
         if !metadata.is_ok() {
             cli::abort(
-                String::from("Coudn't find a project configuration!")
+                String::from("Couldn't find a project configuration!")
             );
         } else if metadata.unwrap().is_dir() {
             cli::abort(
