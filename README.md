@@ -1,5 +1,5 @@
 <p align="center">
-  <img align="center" src="https://raw.githubusercontent.com/hrszpuk/rectx/master/.github/rectx.png" width=250 height=250 />
+  <img align="center" src="https://raw.githubusercontent.com/hrszpuk/rectx/develop/.github/rectx.png" width=250 height=250 />
 </p>
 <p align="center">:radioactive: A powerful project manager for the ReCT programming language! :radioactive:</p>
 
