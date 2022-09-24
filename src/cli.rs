@@ -8,7 +8,6 @@
 use std::{fs, io};
 use std::io::{ErrorKind, stdout, Write};
 use std::process::exit;
-use colored::Colorize;
 use crate::manager;
 use crate::manager::generate_project_directory;
 
@@ -34,24 +33,24 @@ pub fn process_flags(args: std::env::Args) {
             "help" => {
                 if arguments.len() > 1 {
                     match arguments[1].as_str() {
-                        "help" => help(),
-                        "new"|"create" => help_new(),
-                        "build" => help_build(),
-                        "run" => help_run(),
-                        _ => help(),
+                        "help" => help::help_command(),
+                        "new"|"create" => help::new_command(),
+                        "build" => help::build_command(),
+                        "run" => help::run_command(),
+                        _ => help::help_command(),
                     }
                 } else {
-                    help();
+                    help::help_command();
                 }
             },
             "new"|"create" => new_project(&arguments),
             "build" => build_project(false),
             "run" => build_project(true),
-            _ => help_unknown()
+            _ => help::unknown_command()
         }
     } else {
         // Here we call the help menu if we only encounter "rectx"
-        help()
+        help::help_command()
     }
 }
 
@@ -139,7 +138,7 @@ pub fn new_project(args: &Vec<String>) {
             }
         };
     } else {
-        help_new();
+        help::new_command();
     }
     exit(0);
 }
@@ -235,36 +234,40 @@ pub fn question(message: String) -> bool {
     }
 }
 
-/// Show help menu to the user.
-/// The help menu contains information on commands and flags, and what they do.
-pub fn help() {
-    println!(
-        "{}{} {}\n\n{}",
-        get_help_title(),
-        "Usage:".bold(),
-        "rectx <command>".bright_green(),
-        "[Commands]".bold()
-    );
-    for (name, example, description) in get_help_commands() {
+mod help {
+    use std::process::exit;
+    use colored::Colorize;
+
+    /// Show help menu to the user.
+    /// The help menu contains information on commands and flags, and what they do.
+    pub fn help_command() {
         println!(
-            "{}\t {} {}\t {} {}",
-            name.bold().bright_cyan(),
-            ":".black(),
-            example.bold().bright_blue(),
-            ":".black(),
-            description.bold().bright_green(),
-        )
+            "{}{} {}\n\n{}",
+            get_help_title(),
+            "Usage:".bold(),
+            "rectx <command>".bright_green(),
+            "[Commands]".bold()
+        );
+        for (name, example, description) in get_help_commands() {
+            println!(
+                "{}\t {} {}\t {} {}",
+                name.bold().bright_cyan(),
+                ":".black(),
+                example.bold().bright_blue(),
+                ":".black(),
+                description.bold().bright_green(),
+            )
+        }
+
+        print_help_info();
+        exit(0);
     }
 
-    print_help_info();
-    exit(0);
-}
-
-/// A specific help menu for the "new" command.
-/// Creating a new project using the new command: usage and explanation.
-pub fn help_new() {
-    println!(
-        "{}{} {}\n\n{}
+    /// A specific help menu for the "new" command.
+    /// Creating a new project using the new command: usage and explanation.
+    pub fn new_command() {
+        println!(
+            "{}{} {}\n\n{}
 The {} command will create a {}.
 After calling this command you will be {} about the project such as:
 - {}
@@ -272,47 +275,51 @@ After calling this command you will be {} about the project such as:
 - {}
 
 An alias of {} is {} ({}) which functions the same.",
-        get_help_title(),
-        "Usage:".bold(),
-        "rectx new".bright_green(),
-        "[Description]".bold(),
-        "new".bold().underline().cyan(),
-        "new project in a new directory".bold().underline().magenta(),
-        "prompted for information".bold().underline().blue(),
-        "Author".blue().bold(),
-        "Project name".blue().bold(),
-        "Licensing options".blue().bold(),
-        "new".cyan().bold().underline(),
-        "create".cyan().bold().underline(),
-        "rectx create".bright_green()
-    );
-    print_help_info()
-}
+            get_help_title(),
+            "Usage:".bold(),
+            "rectx new".bright_green(),
+            "[Description]".bold(),
+            "new".bold().underline().cyan(),
+            "new project in a new directory".bold().underline().magenta(),
+            "prompted for information".bold().underline().blue(),
+            "Author".blue().bold(),
+            "Project name".blue().bold(),
+            "Licensing options".blue().bold(),
+            "new".cyan().bold().underline(),
+            "create".cyan().bold().underline(),
+            "rectx create".bright_green()
+        );
+        print_help_info()
+    }
 
-pub fn help_build() {
-    println!(
-        "{}{} {}\n\n{}
+    /// Help menu for the build command (rectx build)
+    /// command: rectx help build
+    pub fn build_command() {
+        println!(
+            "{}{} {}\n\n{}
 The {} command can be used to {} from a ReCT project.
 The {} command takes information from the {} (generated by {}),
 and uses it to create the executable.
 
 This means you can specify the {}!",
-        get_help_title(),
-        "Usage:".bold(),
-        "rectx build".bright_green(),
-        "[Description]".bold(),
-        "build".cyan().bold().underline(),
-        "create an executable".blue(),
-        "build".cyan().bold().underline(),
-        "config.toml".bold().underline(),
-        "rectx new".bright_green(),
-        "compiler, compiler flags, executable name, and more".bold().underline(),
-    );
-}
+            get_help_title(),
+            "Usage:".bold(),
+            "rectx build".bright_green(),
+            "[Description]".bold(),
+            "build".cyan().bold().underline(),
+            "create an executable".blue(),
+            "build".cyan().bold().underline(),
+            "config.toml".bold().underline(),
+            "rectx new".bright_green(),
+            "compiler, compiler flags, executable name, and more".bold().underline(),
+        );
+    }
 
-pub fn help_run() {
-    println!(
-        "{}{} {}\n\n{}
+    /// Help menu for the run command (rectx run)
+    /// command: rectx help run
+    pub fn run_command() {
+        println!(
+            "{}{} {}\n\n{}
 The {} command can be used to {} from a ReCT project.
 The {} command takes information from the {} (generated by {}), and uses it to create the executable.
 
@@ -320,69 +327,71 @@ This means you can specify the {}!
 
 The major difference between the {} command and the {} command is that the {} command {} for you.
 {} the {} command has separate settings from the {} command in the {}.",
-        get_help_title(),
-        "Usage:".bold(),
-        "rectx run".bright_green(),
-        "[Description]".bold(),
-        "run".cyan().bold().underline(),
-        "create an executable".blue(),
-        "run".cyan().bold().underline(),
-        "config.toml".bold().underline(),
-        "rectx new".bright_green(),
-        "compiler, compiler flags, executable name, and more".bold().underline(),
-        "run".cyan().bold().underline(),
-        "build".cyan().bold().underline(),
-        "run".cyan().bold().underline(),
-        "executes the executable".bold().underline(),
-        "IMPORTANT NOTE:".magenta(),
-        "run".cyan().bold().underline(),
-        "build".cyan().bold().underline(),
-        "config.toml".bold().underline(),
-    );
-}
+            get_help_title(),
+            "Usage:".bold(),
+            "rectx run".bright_green(),
+            "[Description]".bold(),
+            "run".cyan().bold().underline(),
+            "create an executable".blue(),
+            "run".cyan().bold().underline(),
+            "config.toml".bold().underline(),
+            "rectx new".bright_green(),
+            "compiler, compiler flags, executable name, and more".bold().underline(),
+            "run".cyan().bold().underline(),
+            "build".cyan().bold().underline(),
+            "run".cyan().bold().underline(),
+            "executes the executable".bold().underline(),
+            "IMPORTANT NOTE:".magenta(),
+            "run".cyan().bold().underline(),
+            "build".cyan().bold().underline(),
+            "config.toml".bold().underline(),
+        );
+    }
 
-pub fn help_unknown() {
-    println!(
-        "{}{} {}
+    /// Help menu for when the user types an unknown command
+    pub fn unknown_command() {
+        println!(
+            "{}{} {}
 The command you have entered does not exist!
 Use {} for information on the commands you can use.",
-    get_help_title(),
-    "Usage:".bold(),
-    "rectx <command>".bright_green(),
-    "rectx help".bold().underline().cyan()
-    );
-    print_help_info();
-}
+            get_help_title(),
+            "Usage:".bold(),
+            "rectx <command>".bright_green(),
+            "rectx help".bold().underline().cyan()
+        );
+        print_help_info();
+    }
 
 // Helper commands for printing help menu
 // print_help_info() displays the github page link and rect discord server link
 // get_help_commands() returns a vector of each help command
 // get_help_title() returns a string of the help menu title
 
-fn print_help_info() {
-    println!("\n{}{}",
-             "For more information check out the GitHub page: ".bold(),
-             "https://github.com/hrszpuk/rectx".bright_blue());
-    println!("{} {}",
-             "or join the ReCT Discord server:".bold(),
-             "https://discord.gg/Ymm9xGxWZf".bright_blue());
-}
-
-fn get_help_commands() -> Vec<(&'static str, &'static str, &'static str)> {
-    vec![
-        ("Help", "rectx help", "Shows this help message."),
-        ("New", "rectx new", "Creates a new ReCTx project."),
-        ("Build", "rectx build", "Builds the current ReCTx project."),
-        ("Run", "rectx run", "Runs the current ReCTx project.")
-    ]
-}
-
-fn get_help_title() -> String {
-    let title = "ReCTx Project Manager";
-    let version = "v1.0.0";
-    let mut dashes = String::new();
-    for _ in 0..(title.len()+version.len()+2) {
-        dashes.push('-');
+    fn print_help_info() {
+        println!("\n{}{}",
+                 "For more information check out the GitHub page: ".bold(),
+                 "https://github.com/hrszpuk/rectx".bright_blue());
+        println!("{} {}",
+                 "or join the ReCT Discord server:".bold(),
+                 "https://discord.gg/Ymm9xGxWZf".bright_blue());
     }
-    format!("{}\n{} {}\n{}\n", dashes, title.bold(), version.bright_green().bold(), dashes)
+
+    fn get_help_commands() -> Vec<(&'static str, &'static str, &'static str)> {
+        vec![
+            ("Help", "rectx help", "Shows this help message."),
+            ("New", "rectx new", "Creates a new ReCTx project."),
+            ("Build", "rectx build", "Builds the current ReCTx project."),
+            ("Run", "rectx run", "Runs the current ReCTx project.")
+        ]
+    }
+
+    fn get_help_title() -> String {
+        let title = "ReCTx Project Manager";
+        let version = "v1.0.0";
+        let mut dashes = String::new();
+        for _ in 0..(title.len() + version.len() + 2) {
+            dashes.push('-');
+        }
+        format!("{}\n{} {}\n{}\n", dashes, title.bold(), version.bright_green().bold(), dashes)
+    }
 }
