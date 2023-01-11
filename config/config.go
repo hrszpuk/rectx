@@ -1,34 +1,57 @@
 package config
 
 import (
+	"bytes"
+	"github.com/BurntSushi/toml"
 	"os"
 	"rectx/utilities"
 )
 
 type Config struct {
-	// ReCT stuff
-	rgocLocation       string
-	rctcLocation       string
-	compilerPreference string
-	packagesLocation   string
-
-	// Template stuff
-	defaultTemplate        string
-	templateLocation       string
-	standardTemplates      []string
-	templateDownloadSource string
 
 	// User stuff
-	author string
-	email  string
+	author string `toml:"user.author"`
+	email  string `toml:"user.email"`
 
 	// License stuff
-	defaultLicense        string
-	licenseLocation       string
-	licenseDownloadSource string
+	defaultLicense        string `toml:"license.default"`
+	licenseLocation       string `toml:"license.location"`
+	licenseDownloadSource string `toml:"license.download.source"`
+
+	// ReCT stuff
+	rgocLocation       string `toml:"compiler.rgoc.location"`
+	rctcLocation       string `toml:"compiler.rctc.location"`
+	compilerPreference string `toml:"compiler.preference"`
+	packagesLocation   string `toml:"compiler.packages.location"`
+
+	// Template stuff
+	defaultTemplate        string   `toml:"template.default"`
+	templateLocation       string   `toml:"template.location"`
+	standardTemplates      []string `toml:"template.standards"`
+	templateDownloadSource string   `toml:"template.download.source"`
 
 	// Config stuff
-	configDownloadSource string
+	configDownloadSource string `toml:"config.download.source"`
+}
+
+func LoadConfig(path string) *Config {
+	var config Config
+	_, err := toml.DecodeFile(path, &config)
+	utilities.Check(err)
+
+	return &config
+}
+
+func DumpConfig(path string, config *Config) {
+	f, err := os.Open(path)
+	utilities.Check(err)
+	defer f.Close()
+
+	buffer := new(bytes.Buffer)
+	err = toml.NewEncoder(buffer).Encode(config)
+	utilities.Check(err)
+
+	f.Write(buffer.Bytes())
 }
 
 // GenerateNewConfigDirectory generates a new config file, templates folder, license folder, etc
