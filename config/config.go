@@ -7,38 +7,10 @@ import (
 	"rectx/utilities"
 )
 
-type Config struct {
-
-	// User stuff
-	author string `toml:"user.author"`
-	email  string `toml:"user.email"`
-
-	// License stuff
-	defaultLicense        string `toml:"license.default"`
-	licenseLocation       string `toml:"license.location"`
-	licenseDownloadSource string `toml:"license.download.source"`
-
-	// ReCT stuff
-	rgocLocation       string `toml:"compiler.rgoc.location"`
-	rctcLocation       string `toml:"compiler.rctc.location"`
-	compilerPreference string `toml:"compiler.preference"`
-	packagesLocation   string `toml:"compiler.packages.location"`
-
-	// Template stuff
-	defaultTemplate        string   `toml:"template.default"`
-	templateLocation       string   `toml:"template.location"`
-	standardTemplates      []string `toml:"template.standards"`
-	templateDownloadSource string   `toml:"template.download.source"`
-
-	// Config stuff
-	configDownloadSource string `toml:"config.download.source"`
-}
-
 func LoadConfig(path string) *Config {
 	var config Config
 	_, err := toml.DecodeFile(path, &config)
 	utilities.Check(err)
-
 	return &config
 }
 
