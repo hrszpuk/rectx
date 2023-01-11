@@ -34,8 +34,8 @@ func GenerateNewConfigDirectory() {
 	GenerateTemplates()
 }
 
-// ValidateConfigFile Check if config exists and if not generate it
-func ValidateConfigFile() {
+// ValidateConfig Check if config exists and if not generate it
+func ValidateConfig() {
 	home := GetRectxPath()
 
 	/// Validation
