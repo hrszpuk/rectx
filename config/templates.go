@@ -16,7 +16,7 @@ func GenerateTemplates() {
 
 	domain := "https://hrszpuk.github.io/rectx/templates/"
 	for _, name := range TEMPLATE {
-		utilities.DownloadFile(
+		go utilities.DownloadFile(
 			domain+name+".rectx.template",
 			GetRectxPath()+"/templates/"+name+".rectx.template",
 		)
