@@ -30,6 +30,8 @@ func DumpConfig(path string, config *Config) {
 func GenerateNewConfigDirectory() {
 	utilities.Check(os.Mkdir(GetRectxPath(), os.ModePerm))
 	GenerateDefaultConfigFile()
+	GenerateLicenses()
+	GenerateTemplates()
 }
 
 // ValidateConfigFile Check if config exists and if not generate it
@@ -52,7 +54,7 @@ func ValidateConfigFile() {
 
 	if _, err := os.Stat(home + "/templates"); os.IsNotExist(err) {
 		// if ~/.rectx/templates generation is handled by the templates module
-		// TODO
+		GenerateTemplates()
 	}
 
 	if _, err := os.Stat(home + "/licenses"); os.IsNotExist(err) {
