@@ -52,6 +52,7 @@ func ValidateConfigFile() {
 
 	if _, err := os.Stat(home + "/templates"); os.IsNotExist(err) {
 		// if ~/.rectx/templates generation is handled by the templates module
+		// TODO
 	}
 
 	if _, err := os.Stat(home + "/licenses"); os.IsNotExist(err) {
@@ -63,26 +64,6 @@ func ValidateConfigFile() {
 func GenerateDefaultConfigFile() {
 	home := GetRectxPath()
 	utilities.DownloadFile("https://hrszpuk.github.io/rectx/defaultConfig.toml", home+"/config.toml")
-}
-
-func GenerateLicenses() {
-	utilities.Check(os.Mkdir(GetRectxPath()+"/licenses", os.ModePerm))
-
-	licenses := []string{
-		"Apache_License_2.0",
-		"Boost_Software_License",
-		"GNU_AGPLv3",
-		"GNU_GPL3",
-		"GNU_LGPLv3",
-		"MIT_License",
-		"Mozilla_Public_License_2.0",
-	}
-	for _, license := range licenses {
-		utilities.DownloadFile(
-			"https://hrszpuk.github.io/rectx/licenses/"+license,
-			GetRectxPath()+"/licenses/"+license,
-		)
-	}
 }
 
 func GetRectxPath() string {
