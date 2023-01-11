@@ -34,6 +34,7 @@ type Config struct {
 // GenerateNewConfigDirectory generates a new config file, templates folder, license folder, etc
 func GenerateNewConfigDirectory() {
 	utilities.Check(os.Mkdir(GetUserHome()+"/.rectx", os.ModePerm))
+	GenerateDefaultConfigFile()
 }
 
 // ValidateConfigFile Check if config exists and if not generate it
@@ -41,21 +42,52 @@ func ValidateConfigFile() {
 	home := GetUserHome()
 
 	/// Validation
-	// Check ~/.rectx exists
+	// Here we're just checking if the correct files/folders exist for ~/.rectx
+
 	if _, err := os.Stat(home + "/.rectx"); os.IsNotExist(err) {
-		utilities.Check(os.Mkdir(home+"/.rectx", os.ModePerm))
+		// if ~/.rectx doesn't exist then we need to regenerate *everything*
+		GenerateNewConfigDirectory()
+		return
 	}
 
-	// Check ~/.rectx/config.toml exists
 	if _, err := os.Stat(home + "/.rectx/config.toml"); os.IsNotExist(err) {
 		// Download default config file from source and put it in config.toml
 		GenerateDefaultConfigFile()
+	}
+
+	if _, err := os.Stat(home + "/.rectx/templates"); os.IsNotExist(err) {
+		// if ~/.rectx/templates generation is handled by the templates module
+	}
+
+	if _, err := os.Stat(home + "/.rectx/licenses"); os.IsNotExist(err) {
+		// if ~/.rectx/templates generation is handled by the templates module
+		GenerateLicenses()
 	}
 }
 
 func GenerateDefaultConfigFile() {
 	home := GetUserHome()
 	utilities.DownloadFile("https://hrszpuk.github.io/rectx/defaultConfig.toml", home+"/.rectx/config.toml")
+}
+
+func GenerateLicenses() {
+	utilities.Check(os.Mkdir(GetUserHome()+"/.rectx/licenses", os.ModePerm))
+
+	licenses := []string{
+		"Apache_License_2.0",
+		"Boost_Software_License",
+		"GNU_AGPLv3",
+		"GNU_GPL3",
+		"GNU_LGPLv3",
+		"MIT_License",
+		"Mozilla_Public_License_2.0",
+	}
+	for _, license := range licenses {
+		utilities.DownloadFile(
+			"https://hrszpuk.github.io/rectx/licenses/"+license,
+			GetUserHome()+"/.rectx/licenses/"+license,
+		)
+	}
 }
 
 func GetUserHome() string {
