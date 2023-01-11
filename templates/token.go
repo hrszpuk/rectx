@@ -1,15 +1,11 @@
 package templates
 
-type TokenKind int
+type TokenKind string
 
 const (
-	FOLDER_TKN TokenKind = iota
-	FILE_TKN
-	STRING_TKN
-	LEFT_BRACE_TKN
-	RIGHT_BRACE_TKN
-	CONTENT_TKN
-	COMMAND_TKN
+	KEYWORD_TKN TokenKind = "KEYWORD"
+	STRING_TKN            = "STRING"
+	CONTENT_TKN           = "CONTENT"
 )
 
 type Token struct {
