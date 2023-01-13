@@ -13,7 +13,6 @@ var (
 	runCmd      = flag.NewFlagSet("run", flag.ExitOnError)
 	templateCmd = flag.NewFlagSet("template", flag.ExitOnError)
 	configCmd   = flag.NewFlagSet("config", flag.ExitOnError)
-	projectCmd  = flag.NewFlagSet("project", flag.ExitOnError)
 )
 
 func main() {
@@ -44,7 +43,7 @@ func main() {
 		// add "path/to/file" "name"
 		// snapshot "path/to/folder" "name"
 		// setDefault "name of template"
-		// rename "name" "newname"
+		// rename "name" "new name"
 	case "config":
 		utilities.Check(configCmd.Parse(os.Args[2:]))
 		// config. ...
@@ -59,9 +58,6 @@ func main() {
 		// reset "config.setting" "value"
 		// --all
 		// set "config.setting" "value"
-
-	case "project":
-		utilities.Check(projectCmd.Parse(os.Args[2:]))
 	default:
 		log.Fatalf("Unknown subcommand \"%s\"!\n", os.Args[1])
 	}
