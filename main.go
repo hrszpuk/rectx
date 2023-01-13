@@ -16,6 +16,10 @@ var (
 )
 
 func main() {
+	if len(os.Args) < 3 {
+		log.Fatal("Usage: rectx <command> [flags] [arguments]\n")
+	}
+
 	switch os.Args[1] {
 	case "new":
 		utilities.Check(newCmd.Parse(os.Args[2:]))
