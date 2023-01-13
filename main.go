@@ -9,12 +9,49 @@ import (
 )
 
 var (
-	newCmd      = flag.NewFlagSet("new", flag.ExitOnError)
-	buildCmd    = flag.NewFlagSet("build", flag.ExitOnError)
-	runCmd      = flag.NewFlagSet("run", flag.ExitOnError)
-	templateCmd = flag.NewFlagSet("template", flag.ExitOnError)
-	configCmd   = flag.NewFlagSet("config", flag.ExitOnError)
+	// rectx new [optional]
+	newCmd        = flag.NewFlagSet("new", flag.ExitOnError)
+	projectName   string // -n --name
+	author        string // -a --author
+	template      string // -t --template
+	path          string // -p --path
+	license       string // -l --license
+	version       string // -v --version
+	versionSystem string // -vs --version-system
+	noPrompt      bool   // -np --no-prompt
+
+	// rectx build [optional]
+	buildCmd     = flag.NewFlagSet("build", flag.ExitOnError)
+	buildProfile string // -p --profile
+
+	// rectx run [optional]
+	runCmd     = flag.NewFlagSet("run", flag.ExitOnError)
+	runProfile string // -p --profile
+
+	// rectx template <subcommand> [optional]
+	templateCmd         = flag.NewFlagSet("template", flag.ExitOnError)
+	templateSubcommands = [...]string{"list", "add", "snapshot", "setDefault", "rename"}
+
+	// rectx config <subcommand> [optional]
+	configCmd         = flag.NewFlagSet("config", flag.ExitOnError)
+	configSubcommands = [...]string{"validate", "regenerate", "reset", "set"}
+	configFile        bool // -c --config
+	templates         bool // -t --templates
+	licenses          bool // -l --licenses
+	all               bool // -a --author
 )
+
+func initFlags() {
+	// TODO
+	newCmd.StringVar(&projectName, "name", "Untitled", "specify what you want your project to be called")
+	newCmd.StringVar(&author, "author", "", "specify who is creating the project")
+	newCmd.StringVar(&template, "template", "default", "usage")
+	newCmd.StringVar(&path, "path", "Untitled", "usage")
+	newCmd.StringVar(&license, "license", "", "usage")
+	newCmd.StringVar(&version, "version", "0.1.0", "usage")
+	newCmd.StringVar(&versionSystem, "version-system", "major.minor.patch", "usage")
+	newCmd.BoolVar(&noPrompt, "noPrompt", false, "usage")
+}
 
 func main() {
 	if len(os.Args) < 3 {
@@ -25,45 +62,19 @@ func main() {
 	switch os.Args[1] {
 	case "new":
 		utilities.Check(newCmd.Parse(os.Args[2:]))
-		// project_manager.new
-		// -n --name "project name"
-		// -a --author "author"
-		// -t --template "default"
-		// -d --directory "create project path"
-		// -l --license "obvious"
-		// -v --version "0.1.0"
-		// -vs --version-system "major.minor.patch"
-		// -np --no-prompt
+
 	case "build":
 		utilities.Check(buildCmd.Parse(os.Args[2:]))
-		// project_manager.build
-		// -p --profile "custom build profile"
+
 	case "run":
 		utilities.Check(runCmd.Parse(os.Args[2:]))
-		// project_manager.run
-		// -p --profile "custom run profile"
+
 	case "template":
 		utilities.Check(templateCmd.Parse(os.Args[2:]))
-		// templates. ...
-		// list
-		// add "path/to/file" "name"
-		// snapshot "path/to/folder" "name"
-		// setDefault "name of template"
-		// rename "name" "new name"
+
 	case "config":
 		utilities.Check(configCmd.Parse(os.Args[2:]))
-		// config. ...
-		// validate
-		// -cf --config-file
-		// -t --templates
-		// -l --licenses
-		// regenerate
-		// -cf --config-file
-		// -t --templates
-		// -l --licenses
-		// reset "config.setting" "value"
-		// --all
-		// set "config.setting" "value"
+
 	default:
 		log.Fatalf("Unknown subcommand \"%s\"!\n", os.Args[1])
 	}
