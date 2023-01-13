@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"rectx/utilities"
@@ -17,7 +18,8 @@ var (
 
 func main() {
 	if len(os.Args) < 3 {
-		log.Fatal("Usage: rectx <command> [flags] [arguments]\n")
+		fmt.Println("Usage: rectx <command> [flags] [arguments]")
+		os.Exit(0)
 	}
 
 	switch os.Args[1] {
