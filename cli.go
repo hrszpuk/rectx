@@ -90,13 +90,15 @@ func initRunFlags() {
 	runCmd.StringVar(&runProfile, "profile", "", "Specify a custom run profile for the project (must be declared in the project.rectx).")
 }
 
-func ShowUsage() {
-	fmt.Printf("Usage: rectx <command> [subcommand] [flags] [arguments]\n")
+func ShowUsage(command string, showSubcommands bool) {
+	if showSubcommands {
+		command += " [subcommand]"
+	}
+	fmt.Printf("\n  Usage: rectx %s [flags] [arguments]\n", command)
 }
 
 func ShowHelpMenu() {
-	fmt.Println()
-	ShowUsage()
+	ShowUsage("<command>", true)
 	for _, command := range CMDS {
 		name := command.Name()
 		if name == "template" || name == "config" {
@@ -123,9 +125,9 @@ func ShowHelpMenu() {
 }
 
 func ShowNewHelpMenu() {
-	fmt.Printf("\n  Usage: rectx new [flags] [arguments]\n\n")
+	ShowUsage("new", false)
 	fmt.Printf(
-		"  [details]\n  Used to create a new project! \n  This command will prompt you questions about your project" +
+		"\n  [details]\n  Used to create a new project! \n  This command will prompt you questions about your project" +
 			"and then generate all the project files you need to get started." +
 			"\n  Optionally, you can pass flags such as --name=\"borgor\" to quickly assign values without the prompt!" +
 			"\n  You can also add default values for author, license, template, which will make the prompt much faster to fill out!\n\n")
@@ -134,8 +136,8 @@ func ShowNewHelpMenu() {
 }
 
 func ShowRunHelpMenu() {
-	fmt.Printf("\n  Usage: rectx run [flags] [arguments]\n\n")
-	fmt.Printf("  [details]\n  Runs the project's source code. \n  This function will run the executable found in the project." +
+	ShowUsage("run", false)
+	fmt.Printf("\n  [details]\n  Runs the project's source code. \n  This function will run the executable found in the project." +
 		"\n  If no executable exists, or if edits have been made to the project's source code since the last build, " +
 		"\n  then this command will automatically build/re-build the executable.\n\n")
 	fmt.Println("  [flags]")
@@ -143,16 +145,16 @@ func ShowRunHelpMenu() {
 }
 
 func ShowBuildHelpMenu() {
-	fmt.Printf("\n  Usage: rectx build [flags] [arguments]\n\n")
-	fmt.Printf("  [details]\n  Builds the project's source code. \n  This function will build an executable but will not run the executable." +
+	ShowUsage("build", false)
+	fmt.Printf("\n  [details]\n  Builds the project's source code. \n  This function will build an executable but will not run the executable." +
 		"\n  If you wish to run the executable then please check out \"rectx run --help\".\n\n")
 	fmt.Println("  [flags]")
 	buildCmd.PrintDefaults()
 }
 
 func ShowTemplateHelpMenu() {
-	fmt.Printf("\n  Usage: rectx template [subcommand] [flags] [arguments]\n\n")
-	fmt.Printf("  [details]\n  Manage project generation templates." +
+	ShowUsage("template", true)
+	fmt.Printf("\n  [details]\n  Manage project generation templates." +
 		"\n  These templates describe how a project is to be generated." +
 		"\n  You can easily create you own template using a simple syntax." +
 		"\n  Defining your own template allows you to work on projects with a structure you enjoy and are familiar with!\n\n")
@@ -162,8 +164,8 @@ func ShowTemplateHelpMenu() {
 }
 
 func ShowConfigHelpMenu() {
-	fmt.Printf("\n  Usage: rectx config [subcommand] [flags] [arguments]\n\n")
-	fmt.Printf("  [details]\n  Manage the rectx global config." +
+	ShowUsage("config", true)
+	fmt.Printf("\n  [details]\n  Manage the rectx global config." +
 		"\n  This subcommands has little to do with project.rectx files." +
 		"\n  This is for the global rectx config used to configure rectx itself." +
 		"\n  Most importantly, the config subcommands can be used to fix rectx issues with templates, licenses, and more.\n\n")

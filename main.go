@@ -7,7 +7,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		ShowUsage()
+		ShowHelpMenu()
 		os.Exit(0)
 	}
 
