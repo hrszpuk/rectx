@@ -14,27 +14,35 @@ func main() {
 
 	initFlags()
 
-	ifHelp := func(showMenu bool, helpMenu func()) {
-		if showMenu {
-			helpMenu()
-		}
-	}
-
 	switch os.Args[1] {
 	case "new":
 		utilities.Check(newCmd.Parse(os.Args[2:]))
-		ifHelp(help, ShowNewHelpMenu)
+		if help {
+			ShowNewHelpMenu()
+		}
 	case "build":
 		utilities.Check(buildCmd.Parse(os.Args[2:]))
+		if help {
+			ShowBuildHelpMenu()
+		}
 
 	case "run":
 		utilities.Check(runCmd.Parse(os.Args[2:]))
+		if help {
+			ShowRunHelpMenu()
+		}
 
 	case "template":
 		utilities.Check(templateCmd.Parse(os.Args[2:]))
+		if help {
+			ShowTemplateHelpMenu()
+		}
 
 	case "config":
 		utilities.Check(configCmd.Parse(os.Args[2:]))
+		if help {
+			ShowConfigHelpMenu()
+		}
 
 	case "help":
 		fallthrough

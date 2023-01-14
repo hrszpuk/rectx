@@ -26,8 +26,8 @@ var (
 
 	// rectx template <subcommand> [optional]
 	templateCmd               = flag.NewFlagSet("template", flag.ExitOnError)
-	templateSubcommands       = [...]string{"list", "add", "snapshot", "setDefault", "rename"}
-	templateSubcommandDetails = [...]string{
+	templateSubcommands       = []string{"list", "add", "snapshot", "setDefault", "rename"}
+	templateSubcommandDetails = []string{
 		"Lists all the templates in the rectx config directory",
 		"Adds a new template file (.rectx.template required)",
 		"Reads the folders/files of a directory and generates a .rectx.template file",
@@ -37,8 +37,8 @@ var (
 
 	// rectx config <subcommand> [optional]
 	configCmd               = flag.NewFlagSet("config", flag.ExitOnError)
-	configSubcommands       = [...]string{"validate", "regenerate", "reset", "set"}
-	configSubcommandDetails = [...]string{
+	configSubcommands       = []string{"validate", "regenerate", "reset", "set"}
+	configSubcommandDetails = []string{
 		"Checks rectx config data does not contain any errors",
 		"Downloads any missing rectx config data",
 		"Reset a value to it's default in the rectx global config",
@@ -61,7 +61,7 @@ func initFlags() {
 	initConfigFlags()
 
 	for _, cmd := range CMDS {
-		cmd.BoolVar(&help, "help", false, "shows a help message with a list of all the commands")
+		cmd.BoolVar(&help, "help", false, "shows a specific help message for the command used.")
 	}
 }
 
@@ -116,7 +116,7 @@ func ShowHelpMenu() {
 				fmt.Printf("         %s\n", configSubcommandDetails[i])
 			}
 		}
-		fmt.Printf("  [flags]\n")
+		fmt.Println("  [flags]")
 		command.PrintDefaults()
 	}
 
@@ -125,10 +125,56 @@ func ShowHelpMenu() {
 func ShowNewHelpMenu() {
 	fmt.Printf("\nUsage: rectx new [flags] [arguments]\n\n")
 	fmt.Printf(
-		"  [details]\nUsed to create a new project! This command will prompt you questions about your project" +
+		"  [details]\n  Used to create a new project! \n  This command will prompt you questions about your project" +
 			"and then generate all the project files you need to get started." +
-			"Optionally, you can pass flags such as --name=\"borgor\" to quickly assign values without the prompt!" +
-			"You can also add default values for author, license, template, which will make the prompt much faster to fill out!\n\n")
-	fmt.Printf("  [flags]\n")
+			"\n  Optionally, you can pass flags such as --name=\"borgor\" to quickly assign values without the prompt!" +
+			"\n  You can also add default values for author, license, template, which will make the prompt much faster to fill out!\n\n")
+	fmt.Println("  [flags]")
 	newCmd.PrintDefaults()
+}
+
+func ShowRunHelpMenu() {
+	fmt.Printf("\nUsage: rectx run [flags] [arguments]\n\n")
+	fmt.Printf("  [details]\n  Runs the project's source code. \n  This function will run the executable found in the project." +
+		"\n  If no executable exists, or if edits have been made to the project's source code since the last build, " +
+		"\n  then this command will automatically build/re-build the executable.\n\n")
+	fmt.Println("  [flags]")
+	runCmd.PrintDefaults()
+}
+
+func ShowBuildHelpMenu() {
+	fmt.Printf("\nUsage: rectx build [flags] [arguments]\n\n")
+	fmt.Printf("  [details]\n  Builds the project's source code. \n  This function will build an executable but will not run the executable." +
+		"\n  If you wish to run the executable then please check out \"rectx run --help\"\n\n.")
+	fmt.Println("  [flags]")
+	buildCmd.PrintDefaults()
+}
+
+func ShowTemplateHelpMenu() {
+	fmt.Printf("\nUsage: rectx template [subcommand] [flags] [arguments]\n\n")
+	fmt.Printf("  [details]\n  Manage project generation templates." +
+		"\n  These templates describe how a project is to be generated." +
+		"\n  You can easily create you own template using a simple syntax." +
+		"\n  Defining your own template allows you to work on projects with a structure you enjoy and are familiar with!\n\n")
+	PrintSubcommands(templateSubcommands, templateSubcommandDetails)
+	fmt.Printf("\n  [flags]\n")
+	templateCmd.PrintDefaults()
+}
+
+func ShowConfigHelpMenu() {
+	fmt.Printf("\nUsage: rectx config [subcommand] [flags] [arguments]\n\n")
+	fmt.Printf("  [details]\n  Manage the rectx global config." +
+		"\n  This subcommands has little to do with project.rectx files." +
+		"\n  This is for the global rectx config used to configure rectx itself." +
+		"\n  Most importantly, the config subcommands can be used to fix rectx issues with templates, licenses, and more.\n\n")
+	PrintSubcommands(configSubcommands, configSubcommandDetails)
+	fmt.Println("\n  [flags]")
+	configCmd.PrintDefaults()
+}
+
+func PrintSubcommands(subcommands, details []string) {
+	fmt.Println("  [subcommands]")
+	for i, command := range subcommands {
+		fmt.Printf("  %s\n       %s\n", command, details[i])
+	}
 }
