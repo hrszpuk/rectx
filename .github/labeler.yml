@@ -1,20 +1,20 @@
-@rectx/project_manager:
+project-manager:
   - project_manager/*
   - project_manager/**/*
   
-@rectx/utilities:
+utilities:
   - utilities/*
   - utilities/**/*
   
-@rectx/config:
+config:
   - config/*
   - config/**/*
   
-@rectx/metavariables:
+metavariables:
   - metavariables/*
   - metavariables/**/*
   
-@rectx/templates:
+templates:
   - templates/*
   - templates/**/*
   
