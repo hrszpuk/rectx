@@ -1,0 +1,38 @@
+@rectx/project_manager:
+  - project_manager/*
+  - project_manager/**/*
+  
+@rectx/utilities:
+  - utilities/*
+  - utilities/**/*
+  
+@rectx/config:
+  - config/*
+  - config/**/*
+  
+@rectx/metavariables:
+  - metavariables/*
+  - metavariables/**/*
+  
+@rectx/templates:
+  - templates/*
+  - templates/**/*
+  
+workflow:
+  - .github/*
+  - .github/**/*
+  
+top-level:
+  - !*/*
+
+go:
+  - *.go
+  
+asset:
+  - *.png
+  - *.jpg
+  - *.pdf
+  
+README:
+  - README.md
+  - */README.md  
