@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"os"
-	"rectx/utilities"
 )
 
 func main() {
@@ -16,41 +15,21 @@ func main() {
 
 	switch os.Args[1] {
 	case "new":
-		utilities.Check(newCmd.Parse(os.Args[2:]))
-		if help {
-			ShowNewHelpMenu()
-		}
+		handleParseErrorAndHelpFlag(newCmd, newCmd.Parse(os.Args[2:]), ShowNewHelpMenu)
 	case "build":
-		utilities.Check(buildCmd.Parse(os.Args[2:]))
-		if help {
-			ShowBuildHelpMenu()
-		}
-
+		handleParseErrorAndHelpFlag(buildCmd, buildCmd.Parse(os.Args[2:]), ShowBuildHelpMenu)
 	case "run":
-		utilities.Check(runCmd.Parse(os.Args[2:]))
-		if help {
-			ShowRunHelpMenu()
-		}
-
+		handleParseErrorAndHelpFlag(runCmd, runCmd.Parse(os.Args[2:]), ShowRunHelpMenu)
 	case "template":
-		utilities.Check(templateCmd.Parse(os.Args[2:]))
-		if help {
-			ShowTemplateHelpMenu()
-		}
-
+		handleParseErrorAndHelpFlag(templateCmd, templateCmd.Parse(os.Args[2:]), ShowTemplateHelpMenu)
 	case "config":
-		utilities.Check(configCmd.Parse(os.Args[2:]))
-		if help {
-			ShowConfigHelpMenu()
-		}
-
+		handleParseErrorAndHelpFlag(configCmd, configCmd.Parse(os.Args[2:]), ShowConfigHelpMenu)
 	case "help":
 		fallthrough
 	case "--help":
 		fallthrough
 	case "-h":
 		ShowHelpMenu()
-
 	default:
 		log.Fatalf("Unknown command \"%s\"! If you're looking for a certain command try \"rectx --help\"!\n", os.Args[1])
 	}

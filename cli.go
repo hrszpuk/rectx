@@ -178,3 +178,13 @@ func PrintSubcommands(subcommands, details []string) {
 		fmt.Printf("  %s\n       %s\n", command, details[i])
 	}
 }
+
+func handleParseErrorAndHelpFlag(command *flag.FlagSet, err error, helpMenu func()) {
+	if err != nil {
+		name := command.Name()
+		fmt.Println("An unexpected error occurred during flag parsing!")
+		fmt.Printf("Please try \"rectx %s --help\" for more information on the %s command!\n", name, name)
+	} else if help {
+		helpMenu()
+	}
+}
