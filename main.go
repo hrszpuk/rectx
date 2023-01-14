@@ -76,6 +76,6 @@ func main() {
 		utilities.Check(configCmd.Parse(os.Args[2:]))
 
 	default:
-		log.Fatalf("Unknown subcommand \"%s\"! Maybe try rectx --help if you're looking for a certain command!\n", os.Args[1])
+		log.Fatalf("Unknown subcommand \"%s\"!\n", os.Args[1])
 	}
 }
