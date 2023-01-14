@@ -1,6 +1,9 @@
 package main
 
-import "flag"
+import (
+	"flag"
+	"os"
+)
 
 var (
 	// rectx new [optional]
@@ -32,6 +35,10 @@ var (
 	templates         bool // -t --templates
 	licenses          bool // -l --licenses
 	all               bool // -a --all
+
+	help bool
+
+	CMDS = [...]*flag.FlagSet{newCmd, buildCmd, runCmd, templateCmd, configCmd}
 )
 
 func initFlags() {
@@ -39,6 +46,10 @@ func initFlags() {
 	initBuildFlags()
 	initRunFlags()
 	initConfigFlags()
+
+	for _, cmd := range CMDS {
+		cmd.BoolVar(&help, "help", false, "shows a help message with a list of all the commands")
+	}
 }
 
 func initNewFlags() {
@@ -59,9 +70,18 @@ func initConfigFlags() {
 }
 
 func initBuildFlags() {
-	runCmd.StringVar(&buildProfile, "profile", "", "specify a custom build profile for the project")
+	buildCmd.StringVar(&buildProfile, "profile", "", "specify a custom build profile for the project")
 }
 
 func initRunFlags() {
 	runCmd.StringVar(&runProfile, "profile", "", "specify a custom run profile for the project")
+}
+
+func ShowHelpMenu(visible bool) {
+	if visible {
+		for _, cmd := range CMDS {
+			cmd.PrintDefaults()
+		}
+		os.Exit(0)
+	}
 }
