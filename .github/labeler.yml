@@ -21,9 +21,6 @@ templates:
 workflow:
   - .github/*
   - .github/**/*
-  
-top-level:
-  - !*/*
 
 go:
   - *.go
