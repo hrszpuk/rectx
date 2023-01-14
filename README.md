@@ -1,5 +1,5 @@
 <p align="center">
-  <img align="center" src="https://raw.githubusercontent.com/hrszpuk/rectx/master/.github/rectx.png" width=250 height=250 />
+  <img align="center" src="https://media.tenor.com/AQz3_zaiD14AAAAC/hysterical-laughter.gif" width=250 height=250 />
 </p>
 <p align="center">The powerful little project manager for the ReCT programming language!</p>
 
