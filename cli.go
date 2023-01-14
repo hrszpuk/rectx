@@ -28,21 +28,21 @@ var (
 	templateCmd               = flag.NewFlagSet("template", flag.ExitOnError)
 	templateSubcommands       = []string{"list", "add", "snapshot", "setDefault", "rename"}
 	templateSubcommandDetails = []string{
-		"Lists all the templates in the rectx config directory.",
-		"Adds a new template file (.rectx.template required).",
-		"Reads the folders/files of a directory and generates a .rectx.template file.",
-		"Set a default template that will be auto selected for your projects.",
-		"Change the name of a template.",
+		"Arguments: (None)\n       Lists all the templates in the rectx config directory.",
+		"Arguments: path/to/file\n       Adds a new template file (.rectx.template required).",
+		"Arguments: path/to/folder\n       Reads the folders/files of a directory and generates a .rectx.template file.",
+		"Arguments: template-name\n       Set a default template that will be auto selected for your projects.",
+		"Arguments: template-name new-template-name\n       Change the name of a template.",
 	}
 
 	// rectx config <subcommand> [optional]
 	configCmd               = flag.NewFlagSet("config", flag.ExitOnError)
 	configSubcommands       = []string{"validate", "regenerate", "reset", "set"}
 	configSubcommandDetails = []string{
-		"Checks rectx config data does not contain any errors.",
-		"Downloads any missing rectx config data.",
-		"Reset a value to it's default in the rectx global config.",
-		"Change a value in the rectx global config.",
+		"Arguments: (None)\n       Checks rectx global config data does not contain any errors.",
+		"Arguments: (None)\n       Downloads any missing rectx config data.",
+		"Arguments: key-name\n       Reset a value to it's default in the rectx global config.",
+		"Arguments: key-name new-key-value\n       Change a value in the rectx global config.",
 	}
 	configFile bool // -c --config
 	templates  bool // -t --templates
