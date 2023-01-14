@@ -104,19 +104,21 @@ func ShowHelpMenu() {
 		if name == "template" || name == "config" {
 			name += " [subcommand]"
 		}
-		fmt.Printf("\nrectx %s [flags] [arguments]\n\n", name)
+		fmt.Printf("\n> rectx %s [flags] [arguments]\n\n", name)
 		if name == "template [subcommand]" {
 			fmt.Printf("  [subcommands]\n")
 			for i, c := range templateSubcommands {
 				fmt.Printf("   %s\n", c)
 				fmt.Printf("         %s\n", templateSubcommandDetails[i])
 			}
+			fmt.Println()
 		} else if name == "config [subcommand]" {
 			fmt.Printf("  [subcommands]\n")
 			for i, c := range configSubcommands {
 				fmt.Printf("  %s\n", c)
 				fmt.Printf("         %s\n", configSubcommandDetails[i])
 			}
+			fmt.Println()
 		}
 		fmt.Println("  [flags]")
 		command.PrintDefaults()

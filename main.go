@@ -6,12 +6,12 @@ import (
 )
 
 func main() {
+	initFlags()
+
 	if len(os.Args) < 2 {
 		ShowHelpMenu()
 		os.Exit(0)
 	}
-
-	initFlags()
 
 	switch os.Args[1] {
 	case "new":
