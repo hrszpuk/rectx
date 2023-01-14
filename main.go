@@ -52,6 +52,6 @@ func main() {
 		ShowHelpMenu()
 
 	default:
-		log.Fatalf("Unknown command \"%s\"!\n", os.Args[1])
+		log.Fatalf("Unknown command \"%s\"! If you're looking for a certain command try \"rectx --help\"!\n", os.Args[1])
 	}
 }
