@@ -1,0 +1,35 @@
+project-manager:
+  - ["project_manager/*"]
+  - ["project_manager/**/*"]
+  
+utilities:
+  - ["utilities/*"]
+  - ["utilities/**/*"]
+  
+config:
+  - ["config/*"]
+  - ["config/**/*"]
+  
+metavariables:
+  - ["metavariables/*"]
+  - ["metavariables/**/*"]
+  
+templates:
+  - ["templates/*"]
+  - ["templates/**/*"]
+  
+workflow:
+  - [".github/*"]
+  - [".github/**/*"]
+
+golang:
+  - ["*.go"]
+  
+asset:
+  - ["*.png"]
+  - ["*.jpg"]
+  - ["*.pdf"]
+  
+README:
+  - ["README.md"]
+  - ["*/README.md"]
