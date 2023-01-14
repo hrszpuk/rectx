@@ -28,21 +28,21 @@ var (
 	templateCmd               = flag.NewFlagSet("template", flag.ExitOnError)
 	templateSubcommands       = []string{"list", "add", "snapshot", "setDefault", "rename"}
 	templateSubcommandDetails = []string{
-		"Lists all the templates in the rectx config directory",
-		"Adds a new template file (.rectx.template required)",
-		"Reads the folders/files of a directory and generates a .rectx.template file",
-		"Set a default template that will be auto selected for your projects",
-		"Change the name of a template",
+		"Lists all the templates in the rectx config directory.",
+		"Adds a new template file (.rectx.template required).",
+		"Reads the folders/files of a directory and generates a .rectx.template file.",
+		"Set a default template that will be auto selected for your projects.",
+		"Change the name of a template.",
 	}
 
 	// rectx config <subcommand> [optional]
 	configCmd               = flag.NewFlagSet("config", flag.ExitOnError)
 	configSubcommands       = []string{"validate", "regenerate", "reset", "set"}
 	configSubcommandDetails = []string{
-		"Checks rectx config data does not contain any errors",
-		"Downloads any missing rectx config data",
-		"Reset a value to it's default in the rectx global config",
-		"Change a value in the rectx global config",
+		"Checks rectx config data does not contain any errors.",
+		"Downloads any missing rectx config data.",
+		"Reset a value to it's default in the rectx global config.",
+		"Change a value in the rectx global config.",
 	}
 	configFile bool // -c --config
 	templates  bool // -t --templates
@@ -61,33 +61,33 @@ func initFlags() {
 	initConfigFlags()
 
 	for _, cmd := range CMDS {
-		cmd.BoolVar(&help, "help", false, "shows a specific help message for the command used.")
+		cmd.BoolVar(&help, "help", false, "Shows a specific help message for the command used.")
 	}
 }
 
 func initNewFlags() {
-	newCmd.StringVar(&projectName, "name", "Untitled", "specify what you want your project to be called")
-	newCmd.StringVar(&author, "author", "", "specify who is creating the project")
-	newCmd.StringVar(&template, "template", "default", "specify how you want the project sturcture to look")
-	newCmd.StringVar(&path, "path", "Untitled", "specify where to put the project")
-	newCmd.StringVar(&license, "license", "", "specify which license you want your project to use")
-	newCmd.StringVar(&version, "version", "0.1.0", "specify what version to start the project at")
-	newCmd.BoolVar(&noPrompt, "noPrompt", false, "don't show the project prompt (generate based off defaults and provided flags)")
+	newCmd.StringVar(&projectName, "name", "Untitled", "Specify what you want your project to be called.")
+	newCmd.StringVar(&author, "author", "", "Specify who is creating the project.")
+	newCmd.StringVar(&template, "template", "default", "Specify how you want the project structure to look.")
+	newCmd.StringVar(&path, "path", "Untitled", "Specify where to put the project.")
+	newCmd.StringVar(&license, "license", "", "Specify which license you want your project to use.")
+	newCmd.StringVar(&version, "version", "0.1.0", "Specify what version to start the project at.")
+	newCmd.BoolVar(&noPrompt, "noPrompt", false, "Don't show the project prompt (generate based off defaults and provided flags).")
 }
 
 func initConfigFlags() {
-	configCmd.BoolVar(&configFile, "config", false, "specifically the rectx config file")
-	configCmd.BoolVar(&templates, "templates", false, "specifically the rectx templates")
-	configCmd.BoolVar(&licenses, "licenses", false, "specifically the rectx licenses")
-	configCmd.BoolVar(&all, "all", false, "specifically validate/regenerate the entire rectx config directory")
+	configCmd.BoolVar(&configFile, "config", false, "Specifies the rectx config file specifically.")
+	configCmd.BoolVar(&templates, "templates", false, "Specifies the rectx templates specifically.")
+	configCmd.BoolVar(&licenses, "licenses", false, "Specifies the rectx licenses specifically.")
+	configCmd.BoolVar(&all, "all", false, "Specifically validate/regenerate the entire rectx config directory.")
 }
 
 func initBuildFlags() {
-	buildCmd.StringVar(&buildProfile, "profile", "", "specify a custom build profile for the project")
+	buildCmd.StringVar(&buildProfile, "profile", "", "Specify a custom build profile for the project (must be declared in the project.rectx).")
 }
 
 func initRunFlags() {
-	runCmd.StringVar(&runProfile, "profile", "", "specify a custom run profile for the project")
+	runCmd.StringVar(&runProfile, "profile", "", "Specify a custom run profile for the project (must be declared in the project.rectx).")
 }
 
 func ShowUsage() {
@@ -123,7 +123,7 @@ func ShowHelpMenu() {
 }
 
 func ShowNewHelpMenu() {
-	fmt.Printf("\nUsage: rectx new [flags] [arguments]\n\n")
+	fmt.Printf("\n  Usage: rectx new [flags] [arguments]\n\n")
 	fmt.Printf(
 		"  [details]\n  Used to create a new project! \n  This command will prompt you questions about your project" +
 			"and then generate all the project files you need to get started." +
@@ -134,7 +134,7 @@ func ShowNewHelpMenu() {
 }
 
 func ShowRunHelpMenu() {
-	fmt.Printf("\nUsage: rectx run [flags] [arguments]\n\n")
+	fmt.Printf("\n  Usage: rectx run [flags] [arguments]\n\n")
 	fmt.Printf("  [details]\n  Runs the project's source code. \n  This function will run the executable found in the project." +
 		"\n  If no executable exists, or if edits have been made to the project's source code since the last build, " +
 		"\n  then this command will automatically build/re-build the executable.\n\n")
@@ -143,15 +143,15 @@ func ShowRunHelpMenu() {
 }
 
 func ShowBuildHelpMenu() {
-	fmt.Printf("\nUsage: rectx build [flags] [arguments]\n\n")
+	fmt.Printf("\n  Usage: rectx build [flags] [arguments]\n\n")
 	fmt.Printf("  [details]\n  Builds the project's source code. \n  This function will build an executable but will not run the executable." +
-		"\n  If you wish to run the executable then please check out \"rectx run --help\"\n\n.")
+		"\n  If you wish to run the executable then please check out \"rectx run --help\".\n\n")
 	fmt.Println("  [flags]")
 	buildCmd.PrintDefaults()
 }
 
 func ShowTemplateHelpMenu() {
-	fmt.Printf("\nUsage: rectx template [subcommand] [flags] [arguments]\n\n")
+	fmt.Printf("\n  Usage: rectx template [subcommand] [flags] [arguments]\n\n")
 	fmt.Printf("  [details]\n  Manage project generation templates." +
 		"\n  These templates describe how a project is to be generated." +
 		"\n  You can easily create you own template using a simple syntax." +
@@ -162,7 +162,7 @@ func ShowTemplateHelpMenu() {
 }
 
 func ShowConfigHelpMenu() {
-	fmt.Printf("\nUsage: rectx config [subcommand] [flags] [arguments]\n\n")
+	fmt.Printf("\n  Usage: rectx config [subcommand] [flags] [arguments]\n\n")
 	fmt.Printf("  [details]\n  Manage the rectx global config." +
 		"\n  This subcommands has little to do with project.rectx files." +
 		"\n  This is for the global rectx config used to configure rectx itself." +
