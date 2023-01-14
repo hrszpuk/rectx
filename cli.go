@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"os"
+	"fmt"
 )
 
 var (
@@ -25,16 +25,29 @@ var (
 	runProfile string // -p --profile
 
 	// rectx template <subcommand> [optional]
-	templateCmd         = flag.NewFlagSet("template", flag.ExitOnError)
-	templateSubcommands = [...]string{"list", "add", "snapshot", "setDefault", "rename"}
+	templateCmd               = flag.NewFlagSet("template", flag.ExitOnError)
+	templateSubcommands       = [...]string{"list", "add", "snapshot", "setDefault", "rename"}
+	templateSubcommandDetails = [...]string{
+		"Lists all the templates in the rectx config directory",
+		"Adds a new template file (.rectx.template required)",
+		"Reads the folders/files of a directory and generates a .rectx.template file",
+		"Set a default template that will be auto selected for your projects",
+		"Change the name of a template",
+	}
 
 	// rectx config <subcommand> [optional]
-	configCmd         = flag.NewFlagSet("config", flag.ExitOnError)
-	configSubcommands = [...]string{"validate", "regenerate", "reset", "set"}
-	configFile        bool // -c --config
-	templates         bool // -t --templates
-	licenses          bool // -l --licenses
-	all               bool // -a --all
+	configCmd               = flag.NewFlagSet("config", flag.ExitOnError)
+	configSubcommands       = [...]string{"validate", "regenerate", "reset", "set"}
+	configSubcommandDetails = [...]string{
+		"Checks rectx config data does not contain any errors",
+		"Downloads any missing rectx config data",
+		"Reset a value to it's default in the rectx global config",
+		"Change a value in the rectx global config",
+	}
+	configFile bool // -c --config
+	templates  bool // -t --templates
+	licenses   bool // -l --licenses
+	all        bool // -a --all
 
 	help bool
 
@@ -77,11 +90,45 @@ func initRunFlags() {
 	runCmd.StringVar(&runProfile, "profile", "", "specify a custom run profile for the project")
 }
 
-func ShowHelpMenu(visible bool) {
-	if visible {
-		for _, cmd := range CMDS {
-			cmd.PrintDefaults()
+func ShowUsage() {
+	fmt.Printf("Usage: rectx <command> [subcommand] [flags] [arguments]\n")
+}
+
+func ShowHelpMenu() {
+	fmt.Println()
+	ShowUsage()
+	for _, command := range CMDS {
+		name := command.Name()
+		if name == "template" || name == "config" {
+			name += " [subcommand]"
 		}
-		os.Exit(0)
+		fmt.Printf("\nrectx %s [flags] [arguments]\n\n", name)
+		if name == "template [subcommand]" {
+			fmt.Printf("  [subcommands]\n")
+			for i, c := range templateSubcommands {
+				fmt.Printf("   %s\n", c)
+				fmt.Printf("         %s\n", templateSubcommandDetails[i])
+			}
+		} else if name == "config [subcommand]" {
+			fmt.Printf("  [subcommands]\n")
+			for i, c := range configSubcommands {
+				fmt.Printf("  %s\n", c)
+				fmt.Printf("         %s\n", configSubcommandDetails[i])
+			}
+		}
+		fmt.Printf("  [flags]\n")
+		command.PrintDefaults()
 	}
+
+}
+
+func ShowNewHelpMenu() {
+	fmt.Printf("\nUsage: rectx new [flags] [arguments]\n\n")
+	fmt.Printf(
+		"  [details]\nUsed to create a new project! This command will prompt you questions about your project" +
+			"and then generate all the project files you need to get started." +
+			"Optionally, you can pass flags such as --name=\"borgor\" to quickly assign values without the prompt!" +
+			"You can also add default values for author, license, template, which will make the prompt much faster to fill out!\n\n")
+	fmt.Printf("  [flags]\n")
+	newCmd.PrintDefaults()
 }

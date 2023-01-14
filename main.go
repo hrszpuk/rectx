@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"rectx/utilities"
@@ -9,39 +8,40 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: rectx <command> [flags] [arguments]")
+		ShowUsage()
 		os.Exit(0)
 	}
 
 	initFlags()
 
+	ifHelp := func(showMenu bool, helpMenu func()) {
+		if showMenu {
+			helpMenu()
+		}
+	}
+
 	switch os.Args[1] {
 	case "new":
 		utilities.Check(newCmd.Parse(os.Args[2:]))
-		ShowHelpMenu(help)
-
+		ifHelp(help, ShowNewHelpMenu)
 	case "build":
 		utilities.Check(buildCmd.Parse(os.Args[2:]))
-		ShowHelpMenu(help)
 
 	case "run":
 		utilities.Check(runCmd.Parse(os.Args[2:]))
-		ShowHelpMenu(help)
 
 	case "template":
 		utilities.Check(templateCmd.Parse(os.Args[2:]))
-		ShowHelpMenu(help)
 
 	case "config":
 		utilities.Check(configCmd.Parse(os.Args[2:]))
-		ShowHelpMenu(help)
 
 	case "help":
 		fallthrough
 	case "--help":
 		fallthrough
 	case "-h":
-		ShowHelpMenu(true)
+		ShowHelpMenu()
 
 	default:
 		log.Fatalf("Unknown command \"%s\"!\n", os.Args[1])
