@@ -1,35 +1,35 @@
 project-manager:
-  - ["project_manager/*"]
-  - ["project_manager/**/*"]
+  - any: ["project_manager/*"]
+  - any: ["project_manager/**/*"]
   
 utilities:
-  - ["utilities/*"]
-  - ["utilities/**/*"]
+  - any: ["utilities/*"]
+  - any: ["utilities/**/*"]
   
 config:
-  - ["config/*"]
-  - ["config/**/*"]
+  - any: ["config/*"]
+  - any: ["config/**/*"]
   
 metavariables:
-  - ["metavariables/*"]
-  - ["metavariables/**/*"]
+  - any: ["metavariables/*"]
+  - any: ["metavariables/**/*"]
   
 templates:
-  - ["templates/*"]
-  - ["templates/**/*"]
+  - any: ["templates/*"]
+  - any: ["templates/**/*"]
   
 workflow:
-  - [".github/*"]
-  - [".github/**/*"]
+  - any: [".github/*"]
+  - any: [".github/**/*"]
 
 golang:
-  - ["*.go"]
+  - any: ["*.go"]
   
 asset:
-  - ["*.png"]
-  - ["*.jpg"]
-  - ["*.pdf"]
+  - any: ["*.png"]
+  - any: ["*.jpg"]
+  - any: ["*.pdf"]
   
 README:
-  - ["README.md"]
-  - ["*/README.md"]
+  - any: ["README.md"]
+  - any: ["*/README.md"]
