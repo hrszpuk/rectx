@@ -28,21 +28,27 @@ var (
 	templateCmd               = flag.NewFlagSet("template", flag.ExitOnError)
 	templateSubcommands       = []string{"list", "add", "snapshot", "setDefault", "rename"}
 	templateSubcommandDetails = []string{
-		"Arguments: (None)\n       Lists all the templates in the rectx config directory.",
-		"Arguments: path/to/file\n       Adds a new template file (.rectx.template required).",
-		"Arguments: path/to/folder\n       Reads the folders/files of a directory and generates a .rectx.template file.",
-		"Arguments: template-name\n       Set a default template that will be auto selected for your projects.",
-		"Arguments: template-name new-template-name\n       Change the name of a template.",
+		"Lists all the templates in the rectx config directory.",
+		"Adds a new template file (.rectx.template required).",
+		"Reads the folders/files of a directory and generates a .rectx.template file.",
+		"Set a default template that will be auto selected for your projects.",
+		"Change the name of a template.",
+	}
+	templateSubcommandArguments = []string{
+		"(None)", "path/to/file", "path/to/folder", "template-name", "template-name new-template-name",
 	}
 
 	// rectx config <subcommand> [optional]
 	configCmd               = flag.NewFlagSet("config", flag.ExitOnError)
 	configSubcommands       = []string{"validate", "regenerate", "reset", "set"}
 	configSubcommandDetails = []string{
-		"Arguments: (None)\n       Checks rectx global config data does not contain any errors.",
-		"Arguments: (None)\n       Downloads any missing rectx config data.",
-		"Arguments: key-name\n       Reset a value to it's default in the rectx global config.",
-		"Arguments: key-name new-key-value\n       Change a value in the rectx global config.",
+		"Checks rectx global config data does not contain any errors.",
+		"Downloads any missing rectx config data.",
+		"Reset a value to it's default in the rectx global config.",
+		"Change a value in the rectx global config.",
+	}
+	configSubcommandArguments = []string{
+		"(None)", "(None)", "key-name", "key-name new-key-value",
 	}
 	configFile bool // -c --config
 	templates  bool // -t --templates
@@ -52,6 +58,9 @@ var (
 	help bool
 
 	CMDS = [...]*flag.FlagSet{newCmd, buildCmd, runCmd, templateCmd, configCmd}
+
+	// mega mega mega
+	megaSpace = "       "
 )
 
 func initFlags() {
@@ -160,7 +169,7 @@ func ShowTemplateHelpMenu() {
 		"\n  These templates describe how a project is to be generated." +
 		"\n  You can easily create you own template using a simple syntax." +
 		"\n  Defining your own template allows you to work on projects with a structure you enjoy and are familiar with!\n\n")
-	PrintSubcommands(templateSubcommands, templateSubcommandDetails)
+	PrintSubcommands(templateSubcommands, templateSubcommandDetails, templateSubcommandArguments)
 	fmt.Printf("\n  [flags]\n")
 	templateCmd.PrintDefaults()
 }
@@ -171,15 +180,15 @@ func ShowConfigHelpMenu() {
 		"\n  This subcommands has little to do with project.rectx files." +
 		"\n  This is for the global rectx config used to configure rectx itself." +
 		"\n  Most importantly, the config subcommands can be used to fix rectx issues with templates, licenses, and more.\n\n")
-	PrintSubcommands(configSubcommands, configSubcommandDetails)
+	PrintSubcommands(configSubcommands, configSubcommandDetails, configSubcommandArguments)
 	fmt.Println("\n  [flags]")
 	configCmd.PrintDefaults()
 }
 
-func PrintSubcommands(subcommands, details []string) {
+func PrintSubcommands(subcommands, details []string, arguments []string) {
 	fmt.Println("  [subcommands]")
 	for i, command := range subcommands {
-		fmt.Printf("  %s\n       %s\n", command, details[i])
+		fmt.Printf("  %s\n%sArguments: %s\n%s%s\n", command, megaSpace, arguments[i], megaSpace, details[i])
 	}
 }
 
