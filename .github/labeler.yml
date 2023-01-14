@@ -22,7 +22,7 @@ workflow:
   - .github/*
   - .github/**/*
 
-go:
+golang:
   - *.go
   
 asset:
