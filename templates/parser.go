@@ -9,11 +9,12 @@ var KEYWORDS = []string{
 }
 
 type TemplateParser struct {
-	content string
-	tokens  []*Token
-	index   int
-	errors  []string
-	token   *Token
+	content    string
+	tokens     []*Token
+	index      int
+	errors     []string
+	token      *Token
+	statements []Statement
 }
 
 func NewTemplateParser(content string) *TemplateParser {
@@ -24,17 +25,8 @@ func NewTemplateParser(content string) *TemplateParser {
 	}
 }
 
-func (tp *TemplateParser) Parse() {
+func (tp *TemplateParser) Parse() []*Statement {
 	tp.Lex()
-	/* Patterns:
-	FOLDER STRING
-	FOLDER STRING STRING
-	FILE STRING
-	FILE STRING STRING
-	FILE STRING STRING BLOCK
-	FILE STRING BLOCK
-	COMMAND STRING
-	*/
 	tp.index = 0
 	tp.token = tp.tokens[tp.index]
 
@@ -71,7 +63,8 @@ func (tp *TemplateParser) ParseFolder() {
 		// TODO PATTERN ENDS... EXIT
 	}
 
-	// TODO BUILD FOLDER STATEMENT
+	stmt := NewFolderStatement(folderName, sourceFolder)
+	tp.statements = append(tp.statements, stmt)
 }
 
 func (tp *TemplateParser) ParseFile() {
@@ -100,7 +93,8 @@ func (tp *TemplateParser) ParseFile() {
 		// TODO PATTERN ENDS... EXIT (check if keyword next though)
 	}
 
-	// TODO BUILD FILE STATEMENT
+	stmt := NewFileStatement(fileName, sourceFolder, contentBlock)
+	tp.statements = append(tp.statements, stmt)
 }
 
 func (tp *TemplateParser) ParseCommand() {
@@ -113,5 +107,6 @@ func (tp *TemplateParser) ParseCommand() {
 		// TODO ERROR
 	}
 
-	// TODO: BUILD COMMAND STATEMENT
+	stmt := NewCommandStatement(command)
+	tp.statements = append(tp.statements, stmt)
 }
