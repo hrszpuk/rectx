@@ -28,7 +28,7 @@ func DumpConfig(path string, config *Config) {
 
 // GenerateNewConfigDirectory generates a new config file, templates folder, license folder, etc
 func GenerateNewConfigDirectory() {
-	utilities.Check(os.Mkdir(GetRectxPath(), os.ModePerm))
+	utilities.Check(os.Mkdir(utilities.GetRectxPath(), os.ModePerm))
 	GenerateDefaultConfigFile()
 	GenerateLicenses()
 	GenerateTemplates()
@@ -36,7 +36,7 @@ func GenerateNewConfigDirectory() {
 
 // ValidateConfig Check if config exists and if not generate it
 func ValidateConfig() {
-	home := GetRectxPath()
+	home := utilities.GetRectxPath()
 
 	/// Validation
 	// Here we're just checking if the correct files/folders exist for ~/.rectx
@@ -64,12 +64,6 @@ func ValidateConfig() {
 }
 
 func GenerateDefaultConfigFile() {
-	home := GetRectxPath()
+	home := utilities.GetRectxPath()
 	utilities.DownloadFile("https://hrszpuk.github.io/rectx/defaultConfig.toml", home+"/config.toml")
-}
-
-func GetRectxPath() string {
-	home, err := os.UserHomeDir()
-	utilities.Check(err)
-	return home + "/.rectx"
 }
