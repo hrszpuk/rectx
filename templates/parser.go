@@ -1,6 +1,8 @@
 package templates
 
-import "fmt"
+import (
+	"strings"
+)
 
 var KEYWORDS = []string{
 	"folder", "file", "command",
@@ -11,6 +13,7 @@ type TemplateParser struct {
 	tokens  []*Token
 	index   int
 	errors  []string
+	token   *Token
 }
 
 func NewTemplateParser(content string) *TemplateParser {
@@ -23,63 +26,58 @@ func NewTemplateParser(content string) *TemplateParser {
 
 func (tp *TemplateParser) Parse() {
 	tp.Lex()
-	fmt.Printf("len: %d\n", len(tp.tokens))
-	for i, token := range tp.tokens {
-		fmt.Printf("%d: %s, %s\n", i, token.Value, token.Kind)
-	}
-}
+	/* Patterns:
+	FOLDER STRING
+	FOLDER STRING STRING
+	FILE STRING
+	FILE STRING STRING
+	FILE STRING STRING BLOCK
+	FILE STRING BLOCK
+	COMMAND STRING
+	*/
+	tp.index = 0
+	tp.token = tp.tokens[tp.index]
 
-func (tp *TemplateParser) Lex() {
-	for tp.index < len(tp.content) {
-		fmt.Printf("index: %d\n", tp.index)
-		if tp.current() == "#" {
-			for tp.index < len(tp.content) {
-				tp.index++
-				if tp.current() == "\n" {
-					break
-				}
+	for tp.index < len(tp.tokens) {
+		if tp.token.Kind == KEYWORD_TKN {
+			if strings.ToLower(tp.token.Value) == "folder" {
+				tp.ParseFolder()
+			} else if strings.ToLower(tp.token.Value) == "file" {
+				tp.ParseFile()
+			} else if strings.ToLower(tp.token.Value) == "command" {
+				tp.ParseCommand()
 			}
-			tp.index++
-			continue
-		} else if tp.current() == "\"" {
-			buffer := ""
-			tp.index++
-			for tp.index < len(tp.content) && tp.current() != "\"" {
-				buffer += tp.current()
-				tp.index++
-			}
-			tp.index++
-			tp.tokens = append(tp.tokens, NewToken(buffer, STRING_TKN))
-		} else if tp.current() == "{" && tp.index+1 < len(tp.content) && tp.content[tp.index+1] == '%' {
-			buffer := ""
-			tp.index += 2
-			for tp.index < len(tp.content) {
-				buffer += tp.current()
-				tp.index++
-				if tp.current() == "%" && tp.index+1 < len(tp.content) && tp.content[tp.index+1] == '}' {
-					break
-				}
-			}
-			tp.tokens = append(tp.tokens, NewToken(buffer, CONTENT_TKN))
-		} else if tp.current() == " " || tp.current() == "\t" || tp.current() == "\n" {
-			tp.index++
 		} else {
-			buffer := ""
-			for tp.index < len(tp.content) && tp.current() != " " &&
-				tp.current() != "\t" && tp.current() != "\n" {
-				buffer += tp.current()
-				tp.index++
-			}
-			for _, keyword := range KEYWORDS {
-				if buffer == keyword {
-					tp.tokens = append(tp.tokens, NewToken(buffer, KEYWORD_TKN))
-				}
-			}
-			tp.index++
+			// ERROR
 		}
 	}
 }
 
-func (tp *TemplateParser) current() string {
-	return string(tp.content[tp.index])
+func (tp *TemplateParser) ParseFolder() {
+	tp.index++
+	var folderName string
+	if tp.tokens[tp.index].Kind == STRING_TKN {
+		folderName = tp.tokens[tp.index].Value
+		tp.index++
+	} else {
+		// ERROR
+	}
+
+	var sourceFolder string
+	if tp.tokens[tp.index].Kind == STRING_TKN {
+		sourceFolder = tp.tokens[tp.index].Value
+		tp.index++
+	} else {
+		// PATTERN ENDS... EXIT (check if keyword though)
+	}
+
+	// BUILD FOLDER STATEMENT
+}
+
+func (tp *TemplateParser) ParseFile() {
+
+}
+
+func (tp *TemplateParser) ParseCommand() {
+
 }
