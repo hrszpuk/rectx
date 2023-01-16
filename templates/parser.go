@@ -48,7 +48,7 @@ func (tp *TemplateParser) Parse() {
 				tp.ParseCommand()
 			}
 		} else {
-			// ERROR
+			// TODO ERROR
 		}
 	}
 }
@@ -60,7 +60,7 @@ func (tp *TemplateParser) ParseFolder() {
 		folderName = tp.tokens[tp.index].Value
 		tp.index++
 	} else {
-		// ERROR
+		// TODO ERROR
 	}
 
 	var sourceFolder string
@@ -68,16 +68,50 @@ func (tp *TemplateParser) ParseFolder() {
 		sourceFolder = tp.tokens[tp.index].Value
 		tp.index++
 	} else {
-		// PATTERN ENDS... EXIT (check if keyword though)
+		// TODO PATTERN ENDS... EXIT
 	}
 
-	// BUILD FOLDER STATEMENT
+	// TODO BUILD FOLDER STATEMENT
 }
 
 func (tp *TemplateParser) ParseFile() {
+	tp.index++
+	var fileName string
+	if tp.tokens[tp.index].Kind == STRING_TKN {
+		fileName = tp.tokens[tp.index].Value
+		tp.index++
+	} else {
+		// TODO ERROR
+	}
 
+	var sourceFolder string
+	if tp.tokens[tp.index].Kind == STRING_TKN {
+		sourceFolder = tp.tokens[tp.index].Value
+		tp.index++
+	} else {
+		// TODO PATTERN ENDS... EXIT
+	}
+
+	var contentBlock string
+	if tp.tokens[tp.index].Kind == CONTENT_TKN {
+		contentBlock = tp.tokens[tp.index].Value
+		tp.index++
+	} else {
+		// TODO PATTERN ENDS... EXIT (check if keyword next though)
+	}
+
+	// TODO BUILD FILE STATEMENT
 }
 
 func (tp *TemplateParser) ParseCommand() {
+	tp.index++
+	var command string
+	if tp.tokens[tp.index].Kind == STRING_TKN {
+		command = tp.tokens[tp.index].Value
+		tp.index++
+	} else {
+		// TODO ERROR
+	}
 
+	// TODO: BUILD COMMAND STATEMENT
 }
