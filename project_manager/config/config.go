@@ -1,13 +1,20 @@
 package config
 
+import (
+	"bytes"
+	"github.com/BurntSushi/toml"
+	"os"
+	"rectx/utilities"
+)
+
 type (
-	Config struct {
-		Project      ProjectConfig
+	ProjectConfig struct {
+		Project      ProjectDetailsConfig
 		BuildProfile BuildConfig
 		RunProfile   RunConfig
 	}
 
-	ProjectConfig struct {
+	ProjectDetailsConfig struct {
 		Name    string
 		Authors []string
 		Version string
@@ -30,7 +37,7 @@ type (
 	}
 )
 
-func CreateDefaultConfig() *Config {
+func CreateDefaultConfig() *ProjectConfig {
 	runConfig := RunConfig{
 		ChangesCauseRebuild: true,
 		AlwaysRebuild:       false,
@@ -47,17 +54,34 @@ func CreateDefaultConfig() *Config {
 		ExecutableName:  "",
 	}
 
-	projectConfig := ProjectConfig{
+	projectConfig := ProjectDetailsConfig{
 		Name:    "",
 		Authors: nil,
 		Version: "",
 	}
 
-	config := Config{
+	config := ProjectConfig{
 		Project:      projectConfig,
 		BuildProfile: buildConfig,
 		RunProfile:   runConfig,
 	}
 
 	return &config
+}
+
+func (config *ProjectConfig) Load(path string) {
+	_, err := toml.DecodeFile(path, config)
+	utilities.Check(err)
+}
+
+func (config *ProjectConfig) Dump(path string) {
+	f, err := os.Open(path)
+	utilities.Check(err)
+	defer f.Close()
+
+	buffer := new(bytes.Buffer)
+	err = toml.NewEncoder(buffer).Encode(config)
+	utilities.Check(err)
+
+	f.Write(buffer.Bytes())
 }
