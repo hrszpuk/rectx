@@ -26,10 +26,28 @@ func New() {
 	CreateNewProject(pc, templateName)
 }
 
-func build() {
+func GetTemplate() string {
+	fmt.Println("Pick a template:")
+	var templateList []string = templates.FetchTemplates()
+	for _, name := range templateList {
+		fmt.Printf("- %s\n", name)
+	}
 
-}
+	var chosenTemplateName string
+	validTemplateChosen := false
+	fmt.Println("\nType the name of the template you want to use: ")
+	fmt.Scanln(&chosenTemplateName)
+	for _, name := range templateList {
+		if chosenTemplateName == name {
+			validTemplateChosen = true
+			break
+		}
+	}
 
-func run() {
-
+	if !validTemplateChosen {
+		fmt.Printf("\"%s\" is not a valid template!", chosenTemplateName)
+		return GetTemplate()
+	} else {
+		return chosenTemplateName
+	}
 }
