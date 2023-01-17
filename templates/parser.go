@@ -40,7 +40,12 @@ func (tp *TemplateParser) Parse() []Statement {
 				tp.statements = append(tp.statements, tp.ParseCommand())
 			}
 		} else {
-			// TODO ERROR
+			token := tp.tokens[tp.index]
+			tp.index++
+			tp.statements = append(
+				tp.statements,
+				NewBadStatement(NewToken("", STRING_TKN), token),
+			)
 		}
 	}
 	return tp.statements
@@ -48,20 +53,20 @@ func (tp *TemplateParser) Parse() []Statement {
 
 func (tp *TemplateParser) ParseFolder() Statement {
 	tp.index++
-	var folderName string
+	var folderName = ""
 	if tp.tokens[tp.index].Kind == STRING_TKN {
 		folderName = tp.tokens[tp.index].Value
 		tp.index++
 	} else {
-		// TODO ERROR
+		token := tp.tokens[tp.index]
+		tp.index++
+		return NewBadStatement(NewToken("", STRING_TKN), token)
 	}
 
-	var sourceFolder string
+	var sourceFolder = ""
 	if tp.tokens[tp.index].Kind == STRING_TKN {
 		sourceFolder = tp.tokens[tp.index].Value
 		tp.index++
-	} else {
-		// TODO PATTERN ENDS... EXIT
 	}
 
 	return NewFolderStatement(folderName, sourceFolder)
@@ -69,28 +74,26 @@ func (tp *TemplateParser) ParseFolder() Statement {
 
 func (tp *TemplateParser) ParseFile() Statement {
 	tp.index++
-	var fileName string
+	var fileName = ""
 	if tp.tokens[tp.index].Kind == STRING_TKN {
 		fileName = tp.tokens[tp.index].Value
 		tp.index++
 	} else {
-		// TODO ERROR
+		token := tp.tokens[tp.index]
+		tp.index++
+		return NewBadStatement(NewToken("", STRING_TKN), token)
 	}
 
-	var sourceFolder string
+	var sourceFolder = ""
 	if tp.tokens[tp.index].Kind == STRING_TKN {
 		sourceFolder = tp.tokens[tp.index].Value
 		tp.index++
-	} else {
-		// TODO PATTERN ENDS... EXIT
 	}
 
-	var contentBlock string
+	var contentBlock = ""
 	if tp.tokens[tp.index].Kind == CONTENT_TKN {
 		contentBlock = tp.tokens[tp.index].Value
 		tp.index++
-	} else {
-		// TODO PATTERN ENDS... EXIT (check if keyword next though)
 	}
 
 	return NewFileStatement(fileName, sourceFolder, contentBlock)
@@ -103,7 +106,9 @@ func (tp *TemplateParser) ParseCommand() Statement {
 		command = tp.tokens[tp.index].Value
 		tp.index++
 	} else {
-		// TODO ERROR
+		token := tp.tokens[tp.index]
+		tp.index++
+		return NewBadStatement(NewToken("", STRING_TKN), token)
 	}
 
 	return NewCommandStatement(command)
