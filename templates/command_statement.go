@@ -3,6 +3,7 @@ package templates
 import (
 	"os/exec"
 	"rectx/utilities"
+	"strings"
 )
 
 type CommandStatement struct {
@@ -15,8 +16,12 @@ func NewCommandStatement(command string) *CommandStatement {
 	}
 }
 
-func (command *CommandStatement) Generate() {
-	cmd := exec.Command(command.Command)
+func (command *CommandStatement) Generate(_projectName string) {
+	args := strings.Split(command.Command, " ")
+	command.Command = args[0]
+	args = args[1:]
+
+	cmd := exec.Command(command.Command, args...)
 
 	err := cmd.Run()
 
