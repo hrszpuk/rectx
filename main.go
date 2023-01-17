@@ -20,6 +20,7 @@ func main() {
 		project_manager.New()
 	case "build":
 		handleParseErrorAndHelpFlag(buildCmd, buildCmd.Parse(os.Args[2:]), ShowBuildHelpMenu)
+		project_manager.Build()
 	case "run":
 		handleParseErrorAndHelpFlag(runCmd, runCmd.Parse(os.Args[2:]), ShowRunHelpMenu)
 	case "template":

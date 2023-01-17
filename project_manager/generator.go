@@ -10,7 +10,7 @@ import (
 )
 
 func CreateNewProject(config *projectConfig.ProjectConfig, templateName string) {
-	fmt.Println("Generating project...")
+	fmt.Print("Generating project... ")
 
 	utilities.Check(os.Mkdir(config.Project.Name, 0750))
 
