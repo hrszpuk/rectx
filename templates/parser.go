@@ -1,16 +1,20 @@
 package templates
 
-import "fmt"
+import (
+	"strings"
+)
 
 var KEYWORDS = []string{
 	"folder", "file", "command",
 }
 
 type TemplateParser struct {
-	content string
-	tokens  []*Token
-	index   int
-	errors  []string
+	content    string
+	tokens     []*Token
+	index      int
+	errors     []string
+	token      *Token
+	statements []Statement
 }
 
 func NewTemplateParser(content string) *TemplateParser {
@@ -21,65 +25,91 @@ func NewTemplateParser(content string) *TemplateParser {
 	}
 }
 
-func (tp *TemplateParser) Parse() {
+func (tp *TemplateParser) Parse() []Statement {
 	tp.Lex()
-	fmt.Printf("len: %d\n", len(tp.tokens))
-	for i, token := range tp.tokens {
-		fmt.Printf("%d: %s, %s\n", i, token.Value, token.Kind)
-	}
-}
+	tp.index = 0
+	tp.token = tp.tokens[tp.index]
 
-func (tp *TemplateParser) Lex() {
-	for tp.index < len(tp.content) {
-		fmt.Printf("index: %d\n", tp.index)
-		if tp.current() == "#" {
-			for tp.index < len(tp.content) {
-				tp.index++
-				if tp.current() == "\n" {
-					break
-				}
+	for tp.index < len(tp.tokens) {
+		if tp.token.Kind == KEYWORD_TKN {
+			if strings.ToLower(tp.token.Value) == "folder" {
+				tp.statements = append(tp.statements, tp.ParseFolder())
+			} else if strings.ToLower(tp.token.Value) == "file" {
+				tp.statements = append(tp.statements, tp.ParseFile())
+			} else if strings.ToLower(tp.token.Value) == "command" {
+				tp.statements = append(tp.statements, tp.ParseCommand())
 			}
-			tp.index++
-			continue
-		} else if tp.current() == "\"" {
-			buffer := ""
-			tp.index++
-			for tp.index < len(tp.content) && tp.current() != "\"" {
-				buffer += tp.current()
-				tp.index++
-			}
-			tp.index++
-			tp.tokens = append(tp.tokens, NewToken(buffer, STRING_TKN))
-		} else if tp.current() == "{" && tp.index+1 < len(tp.content) && tp.content[tp.index+1] == '%' {
-			buffer := ""
-			tp.index += 2
-			for tp.index < len(tp.content) {
-				buffer += tp.current()
-				tp.index++
-				if tp.current() == "%" && tp.index+1 < len(tp.content) && tp.content[tp.index+1] == '}' {
-					break
-				}
-			}
-			tp.tokens = append(tp.tokens, NewToken(buffer, CONTENT_TKN))
-		} else if tp.current() == " " || tp.current() == "\t" || tp.current() == "\n" {
-			tp.index++
 		} else {
-			buffer := ""
-			for tp.index < len(tp.content) && tp.current() != " " &&
-				tp.current() != "\t" && tp.current() != "\n" {
-				buffer += tp.current()
-				tp.index++
-			}
-			for _, keyword := range KEYWORDS {
-				if buffer == keyword {
-					tp.tokens = append(tp.tokens, NewToken(buffer, KEYWORD_TKN))
-				}
-			}
+			token := tp.tokens[tp.index]
 			tp.index++
+			tp.statements = append(
+				tp.statements,
+				NewBadStatement(NewToken("", STRING_TKN), token),
+			)
 		}
 	}
+	return tp.statements
 }
 
-func (tp *TemplateParser) current() string {
-	return string(tp.content[tp.index])
+func (tp *TemplateParser) ParseFolder() Statement {
+	tp.index++
+	var folderName = ""
+	if tp.tokens[tp.index].Kind == STRING_TKN {
+		folderName = tp.tokens[tp.index].Value
+		tp.index++
+	} else {
+		token := tp.tokens[tp.index]
+		tp.index++
+		return NewBadStatement(NewToken("", STRING_TKN), token)
+	}
+
+	var sourceFolder = ""
+	if tp.tokens[tp.index].Kind == STRING_TKN {
+		sourceFolder = tp.tokens[tp.index].Value
+		tp.index++
+	}
+
+	return NewFolderStatement(folderName, sourceFolder)
+}
+
+func (tp *TemplateParser) ParseFile() Statement {
+	tp.index++
+	var fileName = ""
+	if tp.tokens[tp.index].Kind == STRING_TKN {
+		fileName = tp.tokens[tp.index].Value
+		tp.index++
+	} else {
+		token := tp.tokens[tp.index]
+		tp.index++
+		return NewBadStatement(NewToken("", STRING_TKN), token)
+	}
+
+	var sourceFolder = ""
+	if tp.tokens[tp.index].Kind == STRING_TKN {
+		sourceFolder = tp.tokens[tp.index].Value
+		tp.index++
+	}
+
+	var contentBlock = ""
+	if tp.tokens[tp.index].Kind == CONTENT_TKN {
+		contentBlock = tp.tokens[tp.index].Value
+		tp.index++
+	}
+
+	return NewFileStatement(fileName, sourceFolder, contentBlock)
+}
+
+func (tp *TemplateParser) ParseCommand() Statement {
+	tp.index++
+	var command string
+	if tp.tokens[tp.index].Kind == STRING_TKN {
+		command = tp.tokens[tp.index].Value
+		tp.index++
+	} else {
+		token := tp.tokens[tp.index]
+		tp.index++
+		return NewBadStatement(NewToken("", STRING_TKN), token)
+	}
+
+	return NewCommandStatement(command)
 }
