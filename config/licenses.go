@@ -16,12 +16,12 @@ var LICENSES = [...]string{
 }
 
 func GenerateLicenses() {
-	utilities.Check(os.Mkdir(GetRectxPath()+"/licenses", os.ModePerm))
+	utilities.Check(os.Mkdir(utilities.GetRectxPath()+"/licenses", os.ModePerm))
 
 	for _, license := range LICENSES {
 		utilities.DownloadFile(
 			"https://hrszpuk.github.io/rectx/licenses/"+license,
-			GetRectxPath()+"/licenses/"+license,
+			utilities.GetRectxPath()+"/licenses/"+license,
 		)
 	}
 	// TODO validate licenses/ has license files in it
