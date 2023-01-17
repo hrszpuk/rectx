@@ -28,15 +28,14 @@ func NewTemplateParser(content string) *TemplateParser {
 func (tp *TemplateParser) Parse() []Statement {
 	tp.Lex()
 	tp.index = 0
-	tp.token = tp.tokens[tp.index]
 
 	for tp.index < len(tp.tokens) {
-		if tp.token.Kind == KEYWORD_TKN {
-			if strings.ToLower(tp.token.Value) == "folder" {
+		if tp.tokens[tp.index].Kind == KEYWORD_TKN {
+			if strings.ToLower(tp.tokens[tp.index].Value) == "folder" {
 				tp.statements = append(tp.statements, tp.ParseFolder())
-			} else if strings.ToLower(tp.token.Value) == "file" {
+			} else if strings.ToLower(tp.tokens[tp.index].Value) == "file" {
 				tp.statements = append(tp.statements, tp.ParseFile())
-			} else if strings.ToLower(tp.token.Value) == "command" {
+			} else if strings.ToLower(tp.tokens[tp.index].Value) == "command" {
 				tp.statements = append(tp.statements, tp.ParseCommand())
 			}
 		} else {
@@ -44,7 +43,7 @@ func (tp *TemplateParser) Parse() []Statement {
 			tp.index++
 			tp.statements = append(
 				tp.statements,
-				NewBadStatement(NewToken("", STRING_TKN), token),
+				NewBadStatement(NewToken("", KEYWORD_TKN), token),
 			)
 		}
 	}
