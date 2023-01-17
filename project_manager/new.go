@@ -24,6 +24,8 @@ func New() {
 	templateName := GetTemplate()
 
 	CreateNewProject(pc, templateName)
+
+	pc.Dump(pc.Project.Name)
 }
 
 func GetTemplate() string {
