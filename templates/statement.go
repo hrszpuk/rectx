@@ -3,7 +3,7 @@ package templates
 import "fmt"
 
 type Statement interface {
-	Generate()
+	Generate(projectName string)
 }
 
 type BadStatement struct {
@@ -18,7 +18,7 @@ func NewBadStatement(expected, found *Token) *BadStatement {
 	}
 }
 
-func (bs *BadStatement) Generate() {
+func (bs *BadStatement) Generate(_projectName string) {
 	fmt.Printf(
 		"ERROR: Expected Token of type \"%s\" but found Token of type \"%s\" with values of \"%s\"!\n",
 		bs.expectedToken.Kind,

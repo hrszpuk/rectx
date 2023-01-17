@@ -17,6 +17,6 @@ func NewFolderStatement(name string, sourceDir string) *FolderStatement {
 	}
 }
 
-func (folder *FolderStatement) Generate() {
-	utilities.Check(os.Mkdir(folder.SourceDir+folder.Name, 0750))
+func (folder *FolderStatement) Generate(projectName string) {
+	utilities.Check(os.Mkdir(projectName+"/"+folder.SourceDir+"/"+folder.Name, 0750))
 }

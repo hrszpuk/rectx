@@ -19,8 +19,8 @@ func NewFileStatement(name string, sourceDir string, content string) *FileStatem
 	}
 }
 
-func (file *FileStatement) Generate() {
-	f, err := os.Create(file.SourceDir + file.Name)
+func (file *FileStatement) Generate(projectName string) {
+	f, err := os.Create(projectName + "/" + file.SourceDir + "/" + file.Name)
 	utilities.Check(err)
 
 	_, err = f.WriteString(file.Content)
