@@ -23,7 +23,7 @@ workflow:
   - any: [".github/**/*"]
 
 golang:
-  - any: ["*.go"]
+  - any: ["*.go", "*/*.go", "*/**/*.go"]
   
 asset:
   - any: ["*.png"]
