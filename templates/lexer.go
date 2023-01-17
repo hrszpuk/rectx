@@ -1,10 +1,7 @@
 package templates
 
-import "fmt"
-
 func (tp *TemplateParser) Lex() {
 	for tp.index < len(tp.content) {
-		fmt.Printf("index: %d\n", tp.index)
 		if tp.current() == "#" {
 			for tp.index < len(tp.content) {
 				tp.index++
