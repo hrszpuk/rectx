@@ -25,7 +25,7 @@ func NewTemplateParser(content string) *TemplateParser {
 	}
 }
 
-func (tp *TemplateParser) Parse() []*Statement {
+func (tp *TemplateParser) Parse() []Statement {
 	tp.Lex()
 	tp.index = 0
 	tp.token = tp.tokens[tp.index]
@@ -33,19 +33,20 @@ func (tp *TemplateParser) Parse() []*Statement {
 	for tp.index < len(tp.tokens) {
 		if tp.token.Kind == KEYWORD_TKN {
 			if strings.ToLower(tp.token.Value) == "folder" {
-				tp.ParseFolder()
+				tp.statements = append(tp.statements, tp.ParseFolder())
 			} else if strings.ToLower(tp.token.Value) == "file" {
-				tp.ParseFile()
+				tp.statements = append(tp.statements, tp.ParseFile())
 			} else if strings.ToLower(tp.token.Value) == "command" {
-				tp.ParseCommand()
+				tp.statements = append(tp.statements, tp.ParseCommand())
 			}
 		} else {
 			// TODO ERROR
 		}
 	}
+	return tp.statements
 }
 
-func (tp *TemplateParser) ParseFolder() {
+func (tp *TemplateParser) ParseFolder() Statement {
 	tp.index++
 	var folderName string
 	if tp.tokens[tp.index].Kind == STRING_TKN {
@@ -63,11 +64,10 @@ func (tp *TemplateParser) ParseFolder() {
 		// TODO PATTERN ENDS... EXIT
 	}
 
-	stmt := NewFolderStatement(folderName, sourceFolder)
-	tp.statements = append(tp.statements, stmt)
+	return NewFolderStatement(folderName, sourceFolder)
 }
 
-func (tp *TemplateParser) ParseFile() {
+func (tp *TemplateParser) ParseFile() Statement {
 	tp.index++
 	var fileName string
 	if tp.tokens[tp.index].Kind == STRING_TKN {
@@ -93,11 +93,10 @@ func (tp *TemplateParser) ParseFile() {
 		// TODO PATTERN ENDS... EXIT (check if keyword next though)
 	}
 
-	stmt := NewFileStatement(fileName, sourceFolder, contentBlock)
-	tp.statements = append(tp.statements, stmt)
+	return NewFileStatement(fileName, sourceFolder, contentBlock)
 }
 
-func (tp *TemplateParser) ParseCommand() {
+func (tp *TemplateParser) ParseCommand() Statement {
 	tp.index++
 	var command string
 	if tp.tokens[tp.index].Kind == STRING_TKN {
@@ -107,6 +106,5 @@ func (tp *TemplateParser) ParseCommand() {
 		// TODO ERROR
 	}
 
-	stmt := NewCommandStatement(command)
-	tp.statements = append(tp.statements, stmt)
+	return NewCommandStatement(command)
 }
