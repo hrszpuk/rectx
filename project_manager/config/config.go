@@ -2,6 +2,7 @@ package config
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/BurntSushi/toml"
 	"os"
 	"rectx/utilities"
@@ -75,13 +76,22 @@ func (config *ProjectConfig) Load(path string) {
 }
 
 func (config *ProjectConfig) Dump(path string) {
-	f, err := os.Open(path)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		_, err = os.Create(path)
+		utilities.Check(err)
+	}
+
+	f, err := os.OpenFile(path, os.O_WRONLY, os.ModeType)
 	utilities.Check(err)
-	defer f.Close()
 
 	buffer := new(bytes.Buffer)
 	err = toml.NewEncoder(buffer).Encode(config)
 	utilities.Check(err)
 
-	f.Write(buffer.Bytes())
+	n, err := f.WriteString(buffer.String())
+	fmt.Printf("N: %d\n", n)
+	utilities.Check(err)
+
+	err = f.Close()
+	utilities.Check(err)
 }

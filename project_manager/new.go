@@ -25,7 +25,7 @@ func New() {
 
 	CreateNewProject(pc, templateName)
 
-	pc.Dump(pc.Project.Name)
+	pc.Dump(pc.Project.Name + "/project.rectx")
 }
 
 func GetTemplate() string {
