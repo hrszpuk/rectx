@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"rectx/project_manager"
 )
 
 func main() {
@@ -16,10 +17,13 @@ func main() {
 	switch os.Args[1] {
 	case "new":
 		handleParseErrorAndHelpFlag(newCmd, newCmd.Parse(os.Args[2:]), ShowNewHelpMenu)
+		project_manager.New()
 	case "build":
 		handleParseErrorAndHelpFlag(buildCmd, buildCmd.Parse(os.Args[2:]), ShowBuildHelpMenu)
+		project_manager.Build()
 	case "run":
 		handleParseErrorAndHelpFlag(runCmd, runCmd.Parse(os.Args[2:]), ShowRunHelpMenu)
+		project_manager.Run()
 	case "template":
 		handleParseErrorAndHelpFlag(templateCmd, templateCmd.Parse(os.Args[2:]), ShowTemplateHelpMenu)
 	case "config":
