@@ -39,12 +39,11 @@ func ValidateTemplates() {
 		utilities.Check(err)
 
 		if len(dir) < 1 {
-			fmt.Println("Could not download templates for an unknown reason!")
-			os.Exit(1)
+			fmt.Println("ERROR: Could not download templates for an unknown reason!")
 		}
 	}
 
 	if len(dir) < 3 {
-		fmt.Printf("Expected at least %d templates but only found %d! You may want to regenerate the template files using rectx template regenerate!\n", len(TEMPLATE), len(dir))
+		fmt.Printf("ERROR: Expected at least %d templates but only found %d! You may want to regenerate the template files using \"rectx config regenerate --templates\"!\n", len(TEMPLATE), len(dir))
 	}
 }
