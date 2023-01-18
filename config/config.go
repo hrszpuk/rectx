@@ -55,11 +55,15 @@ func ValidateConfig() {
 	if _, err := os.Stat(home + "/templates"); os.IsNotExist(err) {
 		// if ~/.rectx/templates generation is handled by the templates module
 		GenerateTemplates()
+	} else {
+		ValidateTemplates()
 	}
 
 	if _, err := os.Stat(home + "/licenses"); os.IsNotExist(err) {
 		// if ~/.rectx/templates generation is handled by the templates module
 		GenerateLicenses()
+	} else {
+		ValidateLicenses()
 	}
 }
 
