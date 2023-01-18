@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"rectx/utilities"
 )
@@ -18,11 +19,34 @@ var LICENSES = [...]string{
 func GenerateLicenses() {
 	utilities.Check(os.Mkdir(utilities.GetRectxPath()+"/licenses", os.ModePerm))
 
+	DownloadLicenses(utilities.GetRectxPath() + "/licenses/")
+	ValidateLicenses()
+}
+
+func DownloadLicenses(path string) {
 	for _, license := range LICENSES {
 		utilities.DownloadFile(
 			"https://hrszpuk.github.io/rectx/licenses/"+license,
-			utilities.GetRectxPath()+"/licenses/"+license,
+			path+license,
 		)
 	}
-	// TODO validate licenses/ has license files in it
+}
+
+func ValidateLicenses() {
+	dir, err := os.ReadDir(utilities.GetRectxPath() + "/licenses")
+	utilities.Check(err)
+
+	if len(dir) < 1 {
+		DownloadLicenses(utilities.GetRectxPath() + "/licenses/")
+		dir, err = os.ReadDir(utilities.GetRectxPath() + "/licenses")
+		utilities.Check(err)
+
+		if len(dir) < 1 {
+			fmt.Println("ERROR: Could not download licenses for an unknown reason!")
+		}
+	}
+
+	if len(dir) < 3 {
+		fmt.Printf("ERROR: Expected at least %d licenses but only found %d! You may want to regenerate the template files using \"rectx config regenerate --licenses\"!\n", len(TEMPLATE), len(dir))
+	}
 }
