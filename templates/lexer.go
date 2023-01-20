@@ -55,7 +55,7 @@ func (tp *TemplateParser) Lex() {
 			}
 			for _, keyword := range KEYWORDS {
 				if buffer == keyword {
-					tp.tokens = append(tp.tokens, NewToken(buffer, KEYWORD_TKN))
+					tp.tokens = append(tp.tokens, NewToken(buffer, KEYWORD_TKN, tp.line, tp.column))
 				}
 			}
 			tp.index++
