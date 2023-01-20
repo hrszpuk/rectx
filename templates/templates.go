@@ -26,3 +26,16 @@ func FetchTemplates() []string {
 
 	return templateList
 }
+
+func ListTemplates() []string {
+	dir, err := os.ReadDir(utilities.GetRectxPath() + "/templates")
+	utilities.Check(err)
+
+	var list []string
+
+	for _, entry := range dir {
+		list = append(list, entry.Name())
+	}
+
+	return list
+}

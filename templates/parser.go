@@ -45,7 +45,7 @@ func (tp *TemplateParser) Parse() []Statement {
 			tp.index++
 			tp.statements = append(
 				tp.statements,
-				NewBadStatement(NewToken("", KEYWORD_TKN), token),
+				NewBadStatement(NewToken("", KEYWORD_TKN, token.line, token.column), token),
 			)
 		}
 	}
@@ -61,7 +61,7 @@ func (tp *TemplateParser) ParseFolder() Statement {
 	} else {
 		token := tp.tokens[tp.index]
 		tp.index++
-		return NewBadStatement(NewToken("", STRING_TKN), token)
+		return NewBadStatement(NewToken("", STRING_TKN, token.line, token.column), token)
 	}
 
 	var sourceFolder = ""
@@ -82,7 +82,7 @@ func (tp *TemplateParser) ParseFile() Statement {
 	} else {
 		token := tp.tokens[tp.index]
 		tp.index++
-		return NewBadStatement(NewToken("", STRING_TKN), token)
+		return NewBadStatement(NewToken("", STRING_TKN, token.line, token.column), token)
 	}
 
 	var sourceFolder = ""
@@ -109,7 +109,7 @@ func (tp *TemplateParser) ParseCommand() Statement {
 	} else {
 		token := tp.tokens[tp.index]
 		tp.index++
-		return NewBadStatement(NewToken("", STRING_TKN), token)
+		return NewBadStatement(NewToken("", STRING_TKN, token.line, token.column), token)
 	}
 
 	return NewCommandStatement(command)

@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"rectx/project_manager"
+	"rectx/templates"
 )
 
 func main() {
@@ -24,8 +26,18 @@ func main() {
 	case "run":
 		handleParseErrorAndHelpFlag(runCmd, runCmd.Parse(os.Args[2:]), ShowRunHelpMenu)
 		project_manager.Run()
+	case "templates":
+		fallthrough
 	case "template":
 		handleParseErrorAndHelpFlag(templateCmd, templateCmd.Parse(os.Args[2:]), ShowTemplateHelpMenu)
+		if len(os.Args) == 3 {
+			if os.Args[2] == "list" {
+				fmt.Println("Listing all templates found:")
+				for i, files := range templates.ListTemplates() {
+					fmt.Printf("%d. %s\n", i+1, files)
+				}
+			}
+		}
 	case "config":
 		handleParseErrorAndHelpFlag(configCmd, configCmd.Parse(os.Args[2:]), ShowConfigHelpMenu)
 	case "help":
