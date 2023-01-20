@@ -26,6 +26,8 @@ func main() {
 	case "run":
 		handleParseErrorAndHelpFlag(runCmd, runCmd.Parse(os.Args[2:]), ShowRunHelpMenu)
 		project_manager.Run()
+	case "templates":
+		fallthrough
 	case "template":
 		handleParseErrorAndHelpFlag(templateCmd, templateCmd.Parse(os.Args[2:]), ShowTemplateHelpMenu)
 		if len(os.Args) == 3 {
