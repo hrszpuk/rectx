@@ -15,6 +15,8 @@ type TemplateParser struct {
 	errors     []string
 	token      *Token
 	statements []Statement
+	line       int
+	column     int
 }
 
 func NewTemplateParser(content string) *TemplateParser {
