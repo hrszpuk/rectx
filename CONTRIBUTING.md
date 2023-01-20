@@ -24,12 +24,12 @@ You should commit changes to your own feature branch.
 Once the checklist is complete, you can create a pull request.
 The pull request needs to have a summary of the changes you've made (bullet point list is the best option here) and a reference to any related issues or pull requests.
 Your code will be reviewed, and you may be asked to improve part of the code before the pull request is accepted.
-Once accepted, your code will be merged into the development branch.
+Once accepted, your code will be merged into the master branch.
 
-The development branch holds all the unstable changes to rectx.
-Once a feature cycle is complete, the development branch pull request is created.
-You may be requested to review the development branch code if you are a significant contributor.
-Changes to the codebase may be made, but eventually the pull request will be accepted and your code will be in a release version of rectx!
+The master branch holds all the unstable changes to rectx.
+Once a feature cycle is complete, the master branch pull request is created.
+You may be requested to review the master branch code if you are a significant contributor.
+Changes to the codebase may be made, but eventually a new release will be created and your code will be in a release version of rectx!
 
 ### Summary
 To contribute to the project you will likely follow the following path:
@@ -43,8 +43,12 @@ To contribute to the project you will likely follow the following path:
 4. Your pull request will be reviewed and changes may be requested.
    * If changes are requested it means something in your code is not right or could be improved.
    * You should continue to make changes until the review is approved and your code is ready to be merged.
-5. Congratulations! Your code has been merged into the development branch!
+5. Congratulations! Your code has been merged into the master branch!
    * You may have to wait until the next release to see your code in the final build.
 
 ### Branching strategy
-ReCTx follows a common git branching strategy where all new features have an issue, all new issues have a branch, all feature branches are started from development and merged into development, finally, once development is complete it will be merged into master and a new release will be published.
+ReCTx follows a common branching strategy where each feature/issue is given its own branch
+These branches can have sub-branches but only if the issue is big enough to justify feature sub-branching.
+Once the feature is ready, reviewed, and approved, the branch is merged into master.
+Although it's in master, it's not actually in rectx yet!
+That's because rectx uses a release tag system which means master can be unstable as people can download from the latest release.
