@@ -9,12 +9,14 @@ const (
 )
 
 type Token struct {
-	Value string
-	Kind  TokenKind
+	Value  string
+	Kind   TokenKind
+	line   int
+	column int
 }
 
-func NewToken(value string, kind TokenKind) *Token {
+func NewToken(value string, kind TokenKind, line, column int) *Token {
 	return &Token{
-		value, kind,
+		value, kind, line, column,
 	}
 }
