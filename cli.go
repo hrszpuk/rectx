@@ -7,22 +7,22 @@ import (
 
 var (
 	// rectx new [optional]
-	newCmd      = flag.NewFlagSet("new", flag.ExitOnError)
-	projectName string // -n --name
-	author      string // -a --author
-	template    string // -t --template
-	path        string // -p --path
-	license     string // -l --license
-	version     string // -v --version
-	noPrompt    bool   // -np --no-prompt
+	newCmd          = flag.NewFlagSet("new", flag.ExitOnError)
+	projectNameFlag string // -n --name
+	authorFlag      string // -a --author
+	templateFlag    string // -t --template
+	pathFlag        string // -p --path
+	licenseFlag     string // -l --license
+	versionFlag     string // -v --version
+	noPromptFlag    bool   // -np --no-prompt
 
 	// rectx build [optional]
-	buildCmd     = flag.NewFlagSet("build", flag.ExitOnError)
-	buildProfile string // -p --profile
+	buildCmd         = flag.NewFlagSet("build", flag.ExitOnError)
+	buildProfileFlag string // -p --profile
 
 	// rectx run [optional]
-	runCmd     = flag.NewFlagSet("run", flag.ExitOnError)
-	runProfile string // -p --profile
+	runCmd         = flag.NewFlagSet("run", flag.ExitOnError)
+	runProfileFlag string // -p --profile
 
 	// rectx template <subcommand> [optional]
 	templateCmd               = flag.NewFlagSet("template", flag.ExitOnError)
@@ -50,12 +50,12 @@ var (
 	configSubcommandArguments = []string{
 		"(None)", "(None)", "key-name", "key-name new-key-value",
 	}
-	configFile bool // -c --config
-	templates  bool // -t --templates
-	licenses   bool // -l --licenses
-	all        bool // -a --all
+	configFileFlag bool // -c --config
+	templatesFlag  bool // -t --templates
+	licensesFlag   bool // -l --licenses
+	allFlag        bool // -a --all
 
-	help bool
+	helpFlag bool
 
 	CMDS = [...]*flag.FlagSet{newCmd, buildCmd, runCmd, templateCmd, configCmd}
 
@@ -70,33 +70,33 @@ func initFlags() {
 	initConfigFlags()
 
 	for _, cmd := range CMDS {
-		cmd.BoolVar(&help, "help", false, "Shows a specific help message for the command used.")
+		cmd.BoolVar(&helpFlag, "help", false, "Shows a specific help message for the command used.")
 	}
 }
 
 func initNewFlags() {
-	newCmd.StringVar(&projectName, "name", "Untitled", "Specify what you want your project to be called.")
-	newCmd.StringVar(&author, "author", "", "Specify who is creating the project.")
-	newCmd.StringVar(&template, "template", "default", "Specify how you want the project structure to look.")
-	newCmd.StringVar(&path, "path", "Untitled", "Specify where to put the project.")
-	newCmd.StringVar(&license, "license", "", "Specify which license you want your project to use.")
-	newCmd.StringVar(&version, "version", "0.1.0", "Specify what version to start the project at.")
-	newCmd.BoolVar(&noPrompt, "noPrompt", false, "Don't show the project prompt (generate based off defaults and provided flags).")
+	newCmd.StringVar(&projectNameFlag, "name", "Untitled", "Specify what you want your project to be called.")
+	newCmd.StringVar(&authorFlag, "author", "", "Specify who is creating the project.")
+	newCmd.StringVar(&templateFlag, "template", "default", "Specify how you want the project structure to look.")
+	newCmd.StringVar(&pathFlag, "path", "Untitled", "Specify where to put the project.")
+	newCmd.StringVar(&licenseFlag, "license", "", "Specify which license you want your project to use.")
+	newCmd.StringVar(&versionFlag, "version", "0.1.0", "Specify what version to start the project at.")
+	newCmd.BoolVar(&noPromptFlag, "noPrompt", false, "Don't show the project prompt (generate based off defaults and provided flags).")
 }
 
 func initConfigFlags() {
-	configCmd.BoolVar(&configFile, "config", false, "Specifies the rectx config file specifically.")
-	configCmd.BoolVar(&templates, "templates", false, "Specifies the rectx templates specifically.")
-	configCmd.BoolVar(&licenses, "licenses", false, "Specifies the rectx licenses specifically.")
-	configCmd.BoolVar(&all, "all", false, "Specifically validate/regenerate the entire rectx config directory.")
+	configCmd.BoolVar(&configFileFlag, "config", false, "Specifies the rectx config file specifically.")
+	configCmd.BoolVar(&templatesFlag, "templates", false, "Specifies the rectx templates specifically.")
+	configCmd.BoolVar(&licensesFlag, "licenses", false, "Specifies the rectx licenses specifically.")
+	configCmd.BoolVar(&allFlag, "all", false, "Specifically validate/regenerate the entire rectx config directory.")
 }
 
 func initBuildFlags() {
-	buildCmd.StringVar(&buildProfile, "profile", "", "Specify a custom build profile for the project (must be declared in the project.rectx).")
+	buildCmd.StringVar(&buildProfileFlag, "profile", "", "Specify a custom build profile for the project (must be declared in the project.rectx).")
 }
 
 func initRunFlags() {
-	runCmd.StringVar(&runProfile, "profile", "", "Specify a custom run profile for the project (must be declared in the project.rectx).")
+	runCmd.StringVar(&runProfileFlag, "profile", "", "Specify a custom run profile for the project (must be declared in the project.rectx).")
 }
 
 func ShowUsage(command string, showSubcommands bool) {
@@ -141,7 +141,7 @@ func ShowNewHelpMenu() {
 		"\n  [details]\n  Used to create a new project! \n  This command will prompt you questions about your project" +
 			"and then generate all the project files you need to get started." +
 			"\n  Optionally, you can pass flags such as --name=\"borgor\" to quickly assign values without the prompt!" +
-			"\n  You can also add default values for author, license, template, which will make the prompt much faster to fill out!\n\n")
+			"\n  You can also add default values for authorFlag, license, template, which will make the prompt much faster to fill out!\n\n")
 	fmt.Println("  [flags]")
 	newCmd.PrintDefaults()
 }
@@ -197,7 +197,7 @@ func handleParseErrorAndHelpFlag(command *flag.FlagSet, err error, helpMenu func
 		name := command.Name()
 		fmt.Println("An unexpected error occurred during flag parsing!")
 		fmt.Printf("Please try \"rectx %s --help\" for more information on the %s command!\n", name, name)
-	} else if help {
+	} else if helpFlag {
 		helpMenu()
 	}
 }
