@@ -1,6 +1,8 @@
 package templates
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Statement interface {
 	Generate(projectName string)
@@ -9,6 +11,8 @@ type Statement interface {
 type BadStatement struct {
 	expectedToken *Token
 	tokenFound    *Token
+	line          int
+	column        int
 }
 
 func NewBadStatement(expected, found *Token) *BadStatement {
@@ -20,7 +24,9 @@ func NewBadStatement(expected, found *Token) *BadStatement {
 
 func (bs *BadStatement) Generate(_projectName string) {
 	fmt.Printf(
-		"ERROR: Expected Token of type \"%s\" but found Token of type \"%s\" with values of \"%s\"!\n",
+		"ERROR[%d, %d]: Expected Token of type \"%s\" but found Token of type \"%s\" with values of \"%s\"!\n",
+		bs.line,
+		bs.column,
 		bs.expectedToken.Kind,
 		bs.tokenFound.Kind,
 		bs.tokenFound.Value,
