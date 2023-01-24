@@ -6,6 +6,8 @@ import (
 
 type Statement interface {
 	Generate(projectName string)
+	GetType() string
+	GetName() string
 }
 
 type BadStatement struct {
@@ -31,4 +33,12 @@ func (bs *BadStatement) Generate(_projectName string) {
 		bs.tokenFound.Kind,
 		bs.tokenFound.Value,
 	)
+}
+
+func (bs *BadStatement) GetName() string {
+	return fmt.Sprintf("(%d, %d) Expected \"%s\" but found \"%s\"!", bs.line, bs.column, bs.expectedToken, bs.tokenFound)
+}
+
+func (bs *BadStatement) GetType() string {
+	return "ERROR"
 }

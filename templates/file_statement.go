@@ -26,3 +26,11 @@ func (file *FileStatement) Generate(projectName string) {
 	_, err = f.WriteString(file.Content)
 	utilities.Check(err)
 }
+
+func (file *FileStatement) GetName() string {
+	return file.Name
+}
+
+func (file *FileStatement) GetType() string {
+	return "FILE"
+}
