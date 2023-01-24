@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"fmt"
 	"os"
 	"rectx/config"
 	"rectx/utilities"
@@ -41,7 +42,42 @@ func ListTemplates() []string {
 }
 
 func Test(templateName string) {
-	// TODO
+	file, err := os.ReadFile(utilities.GetRectxPath() + "/templates/" + templateName)
+	utilities.Check(err)
+
+	err = os.Mkdir(".temp", os.ModeDir)
+	utilities.Check(err)
+
+	BadStatementCounter := 0
+	FileStatementCounter := 0
+	FolderStatementCounter := 0
+	CommandStatementCounter := 0
+
+	parser := NewTemplateParser(string(file))
+	stmts := parser.Parse()
+	for _, statement := range stmts {
+		if statement.GetType() == "ERROR" {
+			BadStatementCounter++
+			fmt.Printf("ERROR: %s\n", statement.GetName())
+		} else {
+			fmt.Printf("Generating \"%s\"...", statement.GetType())
+			statement.Generate(utilities.GetRectxPath() + "/.temp/")
+			fmt.Print("DONE! ")
+			if statement.GetType() == "FILE" {
+				FileStatementCounter++
+				fmt.Printf("Created \"%s\"!\n", statement.GetName())
+			} else if statement.GetType() == "FOLDER" {
+				FolderStatementCounter++
+				fmt.Printf("Created \"%s\"!\n", statement.GetName())
+			} else {
+				CommandStatementCounter++
+				fmt.Printf("Executed \"%s\"!\n", statement.GetName())
+			}
+		}
+	}
+
+	err = os.RemoveAll(".temp")
+	utilities.Check(err)
 }
 
 func Snapshot(path string) {

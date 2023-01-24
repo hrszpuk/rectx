@@ -48,6 +48,8 @@ func main() {
 				} else {
 					config.AddTemplate(os.Args[3])
 				}
+			case "test":
+				templates.Test(os.Args[3])
 			default:
 				fmt.Printf("Unknown subcommand \"%s\"! Maybe try rectx templates --help for a list of subcommands.", os.Args[3])
 			}
