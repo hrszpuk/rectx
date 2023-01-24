@@ -72,3 +72,9 @@ func AddTemplate(path string) {
 		"For more information on templates please use rectx template --help",
 	)
 }
+
+func RenameTemplate(templateName, newTemplateName string) {
+	dir := utilities.GetRectxPath() + "/templates/"
+	err := os.Rename(dir+templateName, dir+newTemplateName)
+	utilities.Check(err)
+}

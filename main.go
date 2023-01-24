@@ -52,7 +52,10 @@ func main() {
 				fmt.Printf("Unknown subcommand \"%s\"! Maybe try rectx templates --help for a list of subcommands.", os.Args[3])
 			}
 		} else if len(os.Args) == 5 {
-
+			switch os.Args[2] {
+			case "rename":
+				config.RenameTemplate(os.Args[3], os.Args[4])
+			}
 		}
 	case "config":
 		handleParseErrorAndHelpFlag(configCmd, configCmd.Parse(os.Args[2:]), ShowConfigHelpMenu)

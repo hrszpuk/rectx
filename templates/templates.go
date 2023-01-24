@@ -39,3 +39,11 @@ func ListTemplates() []string {
 
 	return list
 }
+
+func Test(templateName string) {
+	// TODO
+}
+
+func Snapshot(path string) {
+	// TODO
+}
