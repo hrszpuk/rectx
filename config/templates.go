@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"rectx/utilities"
+	"strings"
 )
 
 var TEMPLATE = [...]string{
@@ -46,4 +47,28 @@ func ValidateTemplates() {
 	if len(dir) < 3 {
 		fmt.Printf("ERROR: Expected at least %d templates but only found %d! You may want to regenerate the template files using \"rectx config regenerate --templates\"!\n", len(TEMPLATE), len(dir))
 	}
+}
+
+func AddTemplate(path string) {
+	if !strings.HasSuffix(path, ".rectx.template") {
+		fmt.Printf("Unable to add template because \"%s\" is not a rectx template file!", path)
+		os.Exit(1)
+	}
+
+	bytes, err := os.ReadFile(path)
+	utilities.Check(err)
+
+	ValidateTemplates()
+	pathSplit := strings.Split(path, "/")
+
+	file, err := os.Create(utilities.GetRectxPath() + "/templates/" + pathSplit[len(pathSplit)-1])
+	_, err = file.WriteString(string(bytes))
+	utilities.Check(err)
+
+	utilities.Check(file.Close())
+	fmt.Printf("Added new template called \"%s\"!", pathSplit)
+	fmt.Println(
+		"If you want to rename this template use: rectx template rename <name> <newName>",
+		"For more information on templates please use rectx template --help",
+	)
 }
