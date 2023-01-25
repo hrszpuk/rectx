@@ -8,21 +8,21 @@ import (
 var (
 	// rectx new [optional]
 	newCmd          = flag.NewFlagSet("new", flag.ExitOnError)
-	projectNameFlag string // -n --name
-	authorFlag      string // -a --author
-	templateFlag    string // -t --template
-	pathFlag        string // -p --path
-	licenseFlag     string // -l --license
-	versionFlag     string // -v --version
-	noPromptFlag    bool   // -np --no-prompt
+	projectNameFlag string // --name
+	authorFlag      string // --author
+	templateFlag    string // --template
+	pathFlag        string // --path
+	licenseFlag     string // --license
+	versionFlag     string // --version
+	noPromptFlag    bool   // ---no-prompt
 
 	// rectx build [optional]
 	buildCmd         = flag.NewFlagSet("build", flag.ExitOnError)
-	buildProfileFlag string // -p --profile
+	buildProfileFlag string // --profile
 
 	// rectx run [optional]
 	runCmd         = flag.NewFlagSet("run", flag.ExitOnError)
-	runProfileFlag string // -p --profile
+	runProfileFlag string // --profile
 
 	// rectx template <subcommand> [optional]
 	templateCmd               = flag.NewFlagSet("template", flag.ExitOnError)
@@ -50,19 +50,20 @@ var (
 	configSubcommandArguments = []string{
 		"(None)", "(None)", "key-name", "key-name new-key-value",
 	}
-	configFileFlag bool // -c --config
-	templatesFlag  bool // -t --templates
-	licensesFlag   bool // -l --licenses
-	allFlag        bool // -a --all
+	configFileFlag bool // --config
+	templatesFlag  bool // --templates
+	licensesFlag   bool // --licenses
+	allFlag        bool // --all
 
 	helpFlag bool
 
 	CMDS = [...]*flag.FlagSet{newCmd, buildCmd, runCmd, templateCmd, configCmd}
 
-	// mega mega mega
+	// Used for spacing (7 spaces)
 	megaSpace = "       "
 )
 
+// This function initalises all flags and sets the help flag for each command
 func initFlags() {
 	initNewFlags()
 	initBuildFlags()
@@ -74,6 +75,7 @@ func initFlags() {
 	}
 }
 
+// This function intitalises all of the rectx new command flags variables in declared above.
 func initNewFlags() {
 	newCmd.StringVar(&projectNameFlag, "name", "Untitled", "Specify what you want your project to be called.")
 	newCmd.StringVar(&authorFlag, "author", "", "Specify who is creating the project.")
@@ -84,6 +86,7 @@ func initNewFlags() {
 	newCmd.BoolVar(&noPromptFlag, "noPrompt", false, "Don't show the project prompt (generate based off defaults and provided flags).")
 }
 
+// This function intitalises all of the rectx config command flags variables in declared above.
 func initConfigFlags() {
 	configCmd.BoolVar(&configFileFlag, "config", false, "Specifies the rectx config file specifically.")
 	configCmd.BoolVar(&templatesFlag, "templates", false, "Specifies the rectx templates specifically.")
@@ -91,21 +94,27 @@ func initConfigFlags() {
 	configCmd.BoolVar(&allFlag, "all", false, "Specifically validate/regenerate the entire rectx config directory.")
 }
 
+// This function intitalises all of the rectx build command flags variables in declared above.
 func initBuildFlags() {
 	buildCmd.StringVar(&buildProfileFlag, "profile", "", "Specify a custom build profile for the project (must be declared in the project.rectx).")
 }
 
+// This function intitalises all of the rectx run command flags variables in declared above.
 func initRunFlags() {
 	runCmd.StringVar(&runProfileFlag, "profile", "", "Specify a custom run profile for the project (must be declared in the project.rectx).")
 }
 
+// Shows the usage for a certain command.
+// Not all commands have subcommands, so to show subcommands use the `showSubcommands` parameter.
 func ShowUsage(command string, showSubcommands bool) {
 	if showSubcommands {
-		command += " [subcommand]"
+		command += " <subcommand>"
 	}
-	fmt.Printf("\n  Usage: rectx %s [flags] [arguments]\n", command)
+	fmt.Printf("\n  Usage: rectx %s [flags] <arguments>\n", command)
 }
 
+// Shows the general help menu. This is very large so I try to avoid using it.
+// There are command specific help menus which I think are better.
 func ShowHelpMenu() {
 	ShowUsage("<command>", true)
 	for _, command := range CMDS {
@@ -135,6 +144,8 @@ func ShowHelpMenu() {
 
 }
 
+// The new command help menu. This help menu is specific to the new command. 
+// This means it will only show new command flags.
 func ShowNewHelpMenu() {
 	ShowUsage("new", false)
 	fmt.Printf(
@@ -146,6 +157,8 @@ func ShowNewHelpMenu() {
 	newCmd.PrintDefaults()
 }
 
+// The run command help menu. This help menu is specific to the run command. 
+// This means it will only show run command flags.
 func ShowRunHelpMenu() {
 	ShowUsage("run", false)
 	fmt.Printf("\n  [details]\n  Runs the project's source code. \n  This function will run the executable found in the project." +
@@ -155,6 +168,8 @@ func ShowRunHelpMenu() {
 	runCmd.PrintDefaults()
 }
 
+// The build command help menu. This help menu is specific to the build command. 
+// This means it will only show build command flags.
 func ShowBuildHelpMenu() {
 	ShowUsage("build", false)
 	fmt.Printf("\n  [details]\n  Builds the project's source code. \n  This function will build an executable but will not run the executable." +
@@ -163,6 +178,8 @@ func ShowBuildHelpMenu() {
 	buildCmd.PrintDefaults()
 }
 
+// The template command help menu. This help menu is specific to the template command. 
+// This means it will only show template command flags and subcommands.
 func ShowTemplateHelpMenu() {
 	ShowUsage("template", true)
 	fmt.Printf("\n  [details]\n  Manage project generation templates." +
@@ -174,6 +191,8 @@ func ShowTemplateHelpMenu() {
 	templateCmd.PrintDefaults()
 }
 
+// The config command help menu. This help menu is specific to the config command. 
+// This means it will only show config command flags and subcommands.
 func ShowConfigHelpMenu() {
 	ShowUsage("config", true)
 	fmt.Printf("\n  [details]\n  Manage the rectx global config." +
