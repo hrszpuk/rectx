@@ -2,9 +2,12 @@ package templates
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"rectx/config"
 	"rectx/utilities"
+	"strings"
 )
 
 // Check for template files in ~/.rectx/templates/
@@ -81,5 +84,25 @@ func Test(templateName string) {
 }
 
 func Snapshot(path string) {
-	// TODO
+	templateName := strings.Split(path, "/")[0]
+	templateContents := "# This template was generated using ReCTx Template Snapshot!\n"
+	err := filepath.WalkDir(path, func(xpath string, dir fs.DirEntry, err error) error {
+		if dir.IsDir() {
+			pathContents := strings.Split(xpath, "/")
+			name := pathContents[len(pathContents)-1]
+			sourceDir := ""
+			if len(pathContents) > 1 {
+				for i, pathSegment := range pathContents {
+					if i == len(pathContents)-1 {
+						break
+					}
+					sourceDir += pathSegment + "/"
+				}
+			}
+			templateContents += fmt.Sprintf("FOLDER %s %s\n", name, sourceDir)
+		} 
+		return nil
+	})
+	fmt.Println(templateContents)
+	utilities.Check(err)
 }
