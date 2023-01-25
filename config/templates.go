@@ -62,6 +62,8 @@ func AddTemplate(path string) {
 	pathSplit := strings.Split(path, "/")
 
 	file, err := os.Create(utilities.GetRectxPath() + "/templates/" + pathSplit[len(pathSplit)-1])
+	utilities.Check(err)
+
 	_, err = file.WriteString(string(bytes))
 	utilities.Check(err)
 
@@ -77,4 +79,16 @@ func RenameTemplate(templateName, newTemplateName string) {
 	dir := utilities.GetRectxPath() + "/templates/"
 	err := os.Rename(dir+templateName, dir+newTemplateName)
 	utilities.Check(err)
+}
+
+func SetDefaultTemplate(templateName string) {
+	ValidateConfig()
+	if _, err := os.Stat(utilities.GetRectxPath() + "/templates/" + templateName); os.IsNotExist(err) {
+		fmt.Printf("Could not find template \"%s\"!\n", templateName)
+		os.Exit(1)
+	}
+	configPath := utilities.GetRectxPath() + "config.toml"
+	conf := LoadConfig(configPath)
+	conf.Template.Default = templateName
+	DumpConfig(configPath, conf)
 }
