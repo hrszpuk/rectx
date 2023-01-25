@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"rectx/config"
 	"rectx/project_manager"
 	"rectx/templates"
-	"rectx/utilities"
 	"strings"
 )
 
@@ -46,19 +46,22 @@ func main() {
 					fmt.Printf("Whoops \"%s\" isn't a .rectx.template file!\n", os.Args[3])
 					os.Exit(1)
 				} else {
-					contents, err := os.ReadFile(os.Args[3])
-					utilities.Check(err)
-					file, err := os.Create(utilities.GetRectxPath() + "/templates/" + os.Args[3])
-					_, err = file.Write(contents)
-					utilities.Check(err)
-					utilities.Check(file.Close())
-					fmt.Printf("Added \"%s\" successfully!\n", os.Args)
-					fmt.Println("You can do \"rectx templates list\" to make sure ;)")
+					config.AddTemplate(os.Args[3])
 				}
+			case "test":
+				templates.Test(os.Args[3])
+			case "default":
+				config.SetDefaultTemplate(os.Args[3])
+			case "snapshot":
+				templates.Snapshot(os.Args[3])
 			default:
 				fmt.Printf("Unknown subcommand \"%s\"! Maybe try rectx templates --help for a list of subcommands.", os.Args[3])
 			}
-
+		} else if len(os.Args) == 5 {
+			switch os.Args[2] {
+			case "rename":
+				config.RenameTemplate(os.Args[3], os.Args[4])
+			}
 		}
 	case "config":
 		handleParseErrorAndHelpFlag(configCmd, configCmd.Parse(os.Args[2:]), ShowConfigHelpMenu)
