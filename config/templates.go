@@ -88,7 +88,7 @@ func SetDefaultTemplate(templateName string) {
 		os.Exit(1)
 	}
 	configPath := utilities.GetRectxPath() + "config.toml"
-	conf := LoadConfig(configPath)
+	conf := NewConfig().Load(configPath)
 	conf.Template.Default = templateName
-	DumpConfig(configPath, conf)
+	conf.Dump(configPath)
 }

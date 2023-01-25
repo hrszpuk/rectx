@@ -2,34 +2,63 @@ package config
 
 import (
 	"bytes"
-	"github.com/BurntSushi/toml"
 	"os"
+	"os/user"
 	"rectx/utilities"
+
+	"github.com/BurntSushi/toml"
 )
 
-func LoadConfig(path string) *Config {
-	var config Config
-	_, err := toml.DecodeFile(path, &config)
+func NewConfig() *Config {
+	var conf Config
+	User, err := user.Current()
 	utilities.Check(err)
-	return &config
+
+	conf.User.Author = User.Username
+	conf.User.Email = ""
+	conf.Compiler.Preference = "rgoc"
+
+	conf.Template.DownloadSource = utilities.GetRectxDownloadSource() + "/templates"
+	conf.Template.Location = utilities.GetRectxPath() + "/templates"
+	conf.Template.Default = "default.rectx.template"
+	conf.Template.Standards = []string{"default", "short", "short_with_build"}
+
+	conf.Licenses.DownloadSource = utilities.GetRectxDownloadSource() + "/licenses"
+	conf.Licenses.Location = utilities.GetRectxPath() + "/licenses"
+
+	return &conf
 }
 
-func DumpConfig(path string, config *Config) {
-	f, err := os.Open(path)
+func (self *Config) Load(path string) *Config {
+	_, err := toml.DecodeFile(path, &self)
 	utilities.Check(err)
+	return self
+}
+
+func (self *Config) Dump(path string) *Config {
+	var f *os.File
+	if _, err := os.Stat(path); os.IsExist(err) {
+		f, err = os.OpenFile(path, os.O_WRONLY, os.ModeType)
+	} else {
+		f, err = os.Create(path)
+		utilities.Check(err)
+	}
+
 	defer f.Close()
 
 	buffer := new(bytes.Buffer)
-	err = toml.NewEncoder(buffer).Encode(config)
+	err := toml.NewEncoder(buffer).Encode(self)
 	utilities.Check(err)
 
 	f.Write(buffer.Bytes())
+
+	return self
 }
 
 // GenerateNewConfigDirectory generates a new config file, templates folder, license folder, etc
 func GenerateNewConfigDirectory() {
 	utilities.Check(os.Mkdir(utilities.GetRectxPath(), os.ModePerm))
-	GenerateDefaultConfigFile()
+	NewConfig().Dump(utilities.GetRectxPath() + "/config.toml")
 	GenerateLicenses()
 	GenerateTemplates()
 }
@@ -48,8 +77,8 @@ func ValidateConfig() {
 	}
 
 	if _, err := os.Stat(home + "/config.toml"); os.IsNotExist(err) {
-		// Download default config file from source and put it in config.toml
-		GenerateDefaultConfigFile()
+		// Generate default config file and put it in config.toml
+		NewConfig().Dump(utilities.GetRectxPath() + "/config.toml")
 	}
 
 	if _, err := os.Stat(home + "/templates"); os.IsNotExist(err) {
@@ -65,9 +94,4 @@ func ValidateConfig() {
 	} else {
 		ValidateLicenses()
 	}
-}
-
-func GenerateDefaultConfigFile() {
-	home := utilities.GetRectxPath()
-	utilities.DownloadFile("https://hrszpuk.github.io/rectx/defaultConfig.toml", home+"/config.toml")
 }
