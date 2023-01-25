@@ -85,24 +85,60 @@ func Test(templateName string) {
 
 func Snapshot(path string) {
 	templateName := strings.Split(path, "/")[0]
+	fmt.Printf("Project: %s\n", templateName)
 	templateContents := "# This template was generated using ReCTx Template Snapshot!\n"
+	templateCommands := ""
+
 	err := filepath.WalkDir(path, func(xpath string, dir fs.DirEntry, err error) error {
+		if xpath == templateName {
+			return nil
+		}
+
+		pathContents := strings.Split(xpath, "/")
+		pathContents = pathContents[1:]
+		name := pathContents[len(pathContents)-1]
+		sourceDir := ""
+
+		if len(pathContents) > 1 {
+			for i, pathSegment := range pathContents {
+				if i == len(pathContents)-1 {
+					break
+				}
+				sourceDir += pathSegment + "/"
+			}
+		}
+
 		if dir.IsDir() {
-			pathContents := strings.Split(xpath, "/")
-			name := pathContents[len(pathContents)-1]
-			sourceDir := ""
-			if len(pathContents) > 1 {
-				for i, pathSegment := range pathContents {
-					if i == len(pathContents)-1 {
-						break
-					}
-					sourceDir += pathSegment + "/"
+			templateContents += fmt.Sprintf("FOLDER %s %s\n", name, sourceDir)
+		} else if !dir.IsDir() && strings.Split(strings.ToLower(name), ".")[0] == "commands" {
+			fileBytes, err := os.ReadFile(templateName + "/" + sourceDir + name)
+			utilities.Check(err)
+
+			var buffer []byte
+			for _, char := range fileBytes {
+				buffer = append(buffer, char)
+				if char == '\n' {
+					templateCommands += fmt.Sprintf("COMMAND %s", string(buffer))
+					buffer = []byte{}
 				}
 			}
-			templateContents += fmt.Sprintf("FOLDER %s %s\n", name, sourceDir)
-		} 
+
+
+		} else {
+			fileContent := "{%@FILE_CONTENT_PLACEHOLDER@%}"
+			fileBytes, err := os.ReadFile(templateName + "/" + sourceDir + name)
+			utilities.Check(err)
+
+			fileContent = strings.Replace(fileContent, "@FILE_CONTENT_PLACEHOLDER@", string(fileBytes), 1)
+			templateContents += fmt.Sprintf("FILE %s %s %s\n", name, sourceDir, fileContent)
+		}
 		return nil
 	})
-	fmt.Println(templateContents)
+	templateContents += templateCommands
+	file, err := os.Create(templateName + ".rectx.template")
 	utilities.Check(err)
+	_, err = file.WriteString(templateContents)
+	defer file.Close()
+	utilities.Check(err)
+	fmt.Printf("Snapshot complete... Generated \"%s\"\n!", templateName + ".rectx.template")
 }
