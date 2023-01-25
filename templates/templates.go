@@ -123,7 +123,6 @@ func Snapshot(path string) {
 				}
 			}
 
-
 		} else {
 			fileContent := "{%@FILE_CONTENT_PLACEHOLDER@%}"
 			fileBytes, err := os.ReadFile(templateName + "/" + sourceDir + name)
@@ -134,11 +133,12 @@ func Snapshot(path string) {
 		}
 		return nil
 	})
+	utilities.Check(err)
 	templateContents += templateCommands
 	file, err := os.Create(templateName + ".rectx.template")
 	utilities.Check(err)
 	_, err = file.WriteString(templateContents)
 	defer file.Close()
 	utilities.Check(err)
-	fmt.Printf("Snapshot complete... Generated \"%s\"\n!", templateName + ".rectx.template")
+	fmt.Printf("Snapshot complete... Generated \"%s\"\n!", templateName+".rectx.template")
 }
