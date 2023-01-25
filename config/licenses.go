@@ -26,7 +26,7 @@ func GenerateLicenses() {
 func DownloadLicenses(path string) {
 	for _, license := range LICENSES {
 		utilities.DownloadFile(
-			"https://hrszpuk.github.io/rectx/licenses/"+license,
+			utilities.GetRectxDownloadSource()+"/licenses/"+license,
 			path+license,
 		)
 	}

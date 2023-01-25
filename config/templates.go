@@ -21,7 +21,7 @@ func GenerateTemplates() {
 }
 
 func DownloadTemplates(path string) {
-	domain := "https://hrszpuk.github.io/rectx/templates/"
+	domain := utilities.GetRectxDownloadSource() + "/templates/"
 	for _, name := range TEMPLATE {
 		utilities.DownloadFile(
 			domain+name+".rectx.template",
@@ -49,6 +49,7 @@ func ValidateTemplates() {
 	}
 }
 
+// rectx template add <path/to/template>
 func AddTemplate(path string) {
 	if !strings.HasSuffix(path, ".rectx.template") {
 		fmt.Printf("Unable to add template because \"%s\" is not a rectx template file!", path)
@@ -75,12 +76,14 @@ func AddTemplate(path string) {
 	)
 }
 
+// rectx template rename <templateName> <newTemplateName>
 func RenameTemplate(templateName, newTemplateName string) {
 	dir := utilities.GetRectxPath() + "/templates/"
 	err := os.Rename(dir+templateName, dir+newTemplateName)
 	utilities.Check(err)
 }
 
+// rectx template defualt <templateName>
 func SetDefaultTemplate(templateName string) {
 	ValidateConfig()
 	if _, err := os.Stat(utilities.GetRectxPath() + "/templates/" + templateName); os.IsNotExist(err) {

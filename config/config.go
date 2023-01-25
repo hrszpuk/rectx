@@ -9,13 +9,16 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+// Generates a new config file with the default field values.
+// When loading a config, you will create a new default config then overwrite it using the Load(path) method.
 func NewConfig() *Config {
+
 	var conf Config
 	User, err := user.Current()
 	utilities.Check(err)
 
 	conf.User.Author = User.Username
-	conf.User.Email = ""
+
 	conf.Compiler.Preference = "rgoc"
 
 	conf.Template.DownloadSource = utilities.GetRectxDownloadSource() + "/templates"
@@ -29,16 +32,21 @@ func NewConfig() *Config {
 	return &conf
 }
 
-func (self *Config) Load(path string) *Config {
-	_, err := toml.DecodeFile(path, &self)
+// Loads the values from the config file path provided and overwrites the current field values.
+func (conf *Config) Load(path string) *Config {
+
+	_, err := toml.DecodeFile(path, &conf)
 	utilities.Check(err)
-	return self
+	return conf
 }
 
-func (self *Config) Dump(path string) *Config {
+// Dumps the values of the config struct into a config file.
+func (conf *Config) Dump(path string) *Config {
+
 	var f *os.File
 	if _, err := os.Stat(path); os.IsExist(err) {
 		f, err = os.OpenFile(path, os.O_WRONLY, os.ModeType)
+		utilities.Check(err)
 	} else {
 		f, err = os.Create(path)
 		utilities.Check(err)
@@ -47,15 +55,15 @@ func (self *Config) Dump(path string) *Config {
 	defer f.Close()
 
 	buffer := new(bytes.Buffer)
-	err := toml.NewEncoder(buffer).Encode(self)
+	err := toml.NewEncoder(buffer).Encode(conf)
 	utilities.Check(err)
 
 	f.Write(buffer.Bytes())
 
-	return self
+	return conf
 }
 
-// GenerateNewConfigDirectory generates a new config file, templates folder, license folder, etc
+//Generates an entirely new config directory with all the bells and whistles (licenses, templates, etc)
 func GenerateNewConfigDirectory() {
 	utilities.Check(os.Mkdir(utilities.GetRectxPath(), os.ModePerm))
 	NewConfig().Dump(utilities.GetRectxPath() + "/config.toml")
@@ -63,7 +71,7 @@ func GenerateNewConfigDirectory() {
 	GenerateTemplates()
 }
 
-// ValidateConfig Check if config exists and if not generate it
+// Ensures all parts of the config exist and regenerates them if they do not.
 func ValidateConfig() {
 	home := utilities.GetRectxPath()
 
@@ -77,19 +85,16 @@ func ValidateConfig() {
 	}
 
 	if _, err := os.Stat(home + "/config.toml"); os.IsNotExist(err) {
-		// Generate default config file and put it in config.toml
 		NewConfig().Dump(utilities.GetRectxPath() + "/config.toml")
 	}
 
 	if _, err := os.Stat(home + "/templates"); os.IsNotExist(err) {
-		// if ~/.rectx/templates generation is handled by the templates module
 		GenerateTemplates()
 	} else {
 		ValidateTemplates()
 	}
 
 	if _, err := os.Stat(home + "/licenses"); os.IsNotExist(err) {
-		// if ~/.rectx/templates generation is handled by the templates module
 		GenerateLicenses()
 	} else {
 		ValidateLicenses()
