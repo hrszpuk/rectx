@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"fmt"
 	"os/exec"
 	"rectx/utilities"
 	"strings"
@@ -28,7 +29,8 @@ func (command *CommandStatement) Generate(_projectName string) {
 
 	err := cmd.Run()
 
-	utilities.Check(err)
+	message := fmt.Sprintf("Attempted to run \"%s\" from during template-based project generation failed.", command.Command)
+	utilities.Check(err, true, message)
 }
 
 func (command *CommandStatement) GetName() string {
