@@ -8,7 +8,7 @@ import (
 
 func DownloadFile(downloadUrl, path string) int64 {
 	file, err := os.Create(path)
-	Check(err)
+	Check(err, true, "Attempted to create a file to copy bytes to during a download but failed!")
 	client := http.Client{
 		CheckRedirect: func(r *http.Request, via []*http.Request) error {
 			r.URL.Opaque = r.URL.Path
@@ -17,10 +17,10 @@ func DownloadFile(downloadUrl, path string) int64 {
 	}
 
 	response, err := client.Get(downloadUrl)
-	Check(err)
+	Check(err, true, "Attempted to fetch downloadable content but failed!")
 
 	size, err := io.Copy(file, response.Body)
-	Check(err)
+	Check(err, true, "Attmpted to copy bytes from response body to file but failed!")
 
 	file.Close()
 	response.Body.Close()
