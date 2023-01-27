@@ -25,22 +25,28 @@ func Build() {
 	main := "main.rct" // TODO add entry source file to build profile
 
 	if _, err := os.Stat(buildPath + "/" + name); !os.IsNotExist(err) {
-		utilities.Check(exec.Command("rm", buildPath+"/"+name, "-f").Run())
+		utilities.Check(exec.Command("rm", buildPath+"/"+name, "-f").Run(), false, "Attempted to add ")
 
 	}
 
 	dir, err := os.ReadDir(sourcePath)
-	utilities.Check(err)
+	utilities.ErrCheckReadDir(err, sourcePath, func() {
+		if dir, err := os.Stat(sourcePath); !dir.IsDir() {
+			utilities.Check(err, true, fmt.Sprintf("Could not build \"%s\" because it is not a directory!", sourcePath))
+		} else if os.IsNotExist(err) {
+			utilities.Check(err, true, fmt.Sprintf("Could not build \"%s\" because it does not exist!", sourcePath))
+		} else if os.IsPermission(err) {
+			utilities.Check(err, true, fmt.Sprintf("Could not build \"%s\" due to a lack of permissions!", sourcePath))
+		}
+	})
 
 	if len(dir) < 1 {
-		fmt.Printf("No files within %s/!\n", sourcePath)
+		fmt.Printf("Found no files in %s!\n", sourcePath)
 		os.Exit(1)
 	}
 
-	if _, err := os.Stat(sourcePath + "/" + main); !os.IsNotExist(err) {
-		fmt.Printf("Could not find main.rct in %s/!\n", sourcePath)
-		os.Exit(1)
-	}
+	_, err = os.Stat(sourcePath + "/" + main)
+	utilities.Check(err, true, "Attempted to build %s but failed for unknown reasons!")
 
-	utilities.Check(exec.Command(compiler, main, "-o="+buildPath+"/"+main).Run())
+	utilities.Check(exec.Command(compiler, main, "-o="+buildPath+"/"+main).Run(), true, "Failed to build for unknown reasons!")
 }

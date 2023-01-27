@@ -14,7 +14,11 @@ var TEMPLATE = [...]string{
 }
 
 func GenerateTemplates() {
-	utilities.Check(os.Mkdir(utilities.GetRectxPath()+"/templates", os.ModePerm))
+	if err := os.Mkdir(utilities.GetRectxPath()+"/templates", os.ModePerm); os.IsPermission(err) {
+		utilities.Check(err, true, "Attempted to create templates/ but failed due to a lack of permissions.")
+	} else {
+		utilities.Check(err, true, "Attempted to create templates/ but failed for an unknown reason.")
+	}
 
 	DownloadTemplates(utilities.GetRectxPath() + "/templates/")
 	ValidateTemplates()
@@ -32,20 +36,12 @@ func DownloadTemplates(path string) {
 
 func ValidateTemplates() {
 	dir, err := os.ReadDir(utilities.GetRectxPath() + "/templates")
-	utilities.Check(err)
+	utilities.ErrCheckReadDir(err, "templates/", GenerateTemplates)
 
 	if len(dir) < 1 {
 		DownloadTemplates(utilities.GetRectxPath() + "/templates/")
 		dir, err = os.ReadDir(utilities.GetRectxPath() + "/templates")
-		utilities.Check(err)
-
-		if len(dir) < 1 {
-			fmt.Println("ERROR: Could not download templates for an unknown reason!")
-		}
-	}
-
-	if len(dir) < 3 {
-		fmt.Printf("ERROR: Expected at least %d templates but only found %d! You may want to regenerate the template files using \"rectx config regenerate --templates\"!\n", len(TEMPLATE), len(dir))
+		utilities.ErrCheckReadDir(err, "templates/", GenerateTemplates)
 	}
 }
 
@@ -57,19 +53,34 @@ func AddTemplate(path string) {
 	}
 
 	bytes, err := os.ReadFile(path)
-	utilities.Check(err)
+	if os.IsNotExist(err) {
+		utilities.Check(err, true, "Attempted to load template but it does not exist!")
+	} else if os.IsPermission(err) {
+		utilities.Check(err, true, "Attempted to load template but failed due to a lack of permissions.")
+	} else {
+		utilities.Check(err, true, "Attempted to load template but failed for unkown reasons.")
+	}
 
 	ValidateTemplates()
 	pathSplit := strings.Split(path, "/")
 
 	file, err := os.Create(utilities.GetRectxPath() + "/templates/" + pathSplit[len(pathSplit)-1])
-	utilities.Check(err)
+	defer file.Close()
+
+	if os.IsPermission(err) {
+		utilities.Check(err, true, "Attempted to create internal template file but failed due to a lack of permissions.")
+	} else {
+		utilities.Check(err, true, "Attempted to create internal template file but failed for unkown reasons.")
+	}
 
 	_, err = file.WriteString(string(bytes))
-	utilities.Check(err)
+	if os.IsPermission(err) {
+		utilities.Check(err, true, "Attempted to write to internal tempalte file but failed due to a lack of permissions.")
+	} else {
+		utilities.Check(err, true, "Attempted to write to internal tempalte file but failed for unkown reasons.")
+	}
 
-	utilities.Check(file.Close())
-	fmt.Printf("Added new template called \"%s\"!", pathSplit)
+	fmt.Printf("Added new template called \"%s\"!", pathSplit[len(pathSplit)-1])
 	fmt.Println(
 		"If you want to rename this template use: rectx template rename <name> <newName>",
 		"For more information on templates please use rectx template --help",
@@ -79,8 +90,12 @@ func AddTemplate(path string) {
 // rectx template rename <templateName> <newTemplateName>
 func RenameTemplate(templateName, newTemplateName string) {
 	dir := utilities.GetRectxPath() + "/templates/"
-	err := os.Rename(dir+templateName, dir+newTemplateName)
-	utilities.Check(err)
+	if err := os.Rename(dir+templateName, dir+newTemplateName); os.IsNotExist(err) {
+		utilities.Check(err, true, fmt.Sprintf("Could not rename template %s because it does not exit!", templateName))
+	} else {
+		utilities.Check(err, true, fmt.Sprintf("Could not rename template %s due to a lack of permissions!", templateName))
+	}
+
 }
 
 // rectx template defualt <templateName>

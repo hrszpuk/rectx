@@ -13,12 +13,12 @@ func Run() {
 
 	// TODO this error check should be moved into Load() later
 	if _, err := os.Stat("project.rectx"); os.IsNotExist(err) {
+		utilities.Check(err, true, "Could not find project.rectx config within current directory!")
 		fmt.Println("Could not find project.rectx config within current directory!")
-		os.Exit(1)
 	}
 
 	conf.Load("project.rectx")
-	buildPath := conf.BuildProfile.SourceDirectory
+	buildPath := conf.BuildProfile.BuildDirectory
 	name := conf.BuildProfile.ExecutableName
 
 	if _, err := os.Stat(buildPath + "/" + name); os.IsNotExist(err) {
@@ -26,5 +26,5 @@ func Run() {
 	}
 
 	// TODO add executable arguments to run profile
-	utilities.Check(exec.Command(name).Run())
+	utilities.Check(exec.Command("./"+buildPath+name).Run(), true, "Attempt to run executable failed!")
 }

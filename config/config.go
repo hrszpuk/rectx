@@ -15,9 +15,12 @@ func NewConfig() *Config {
 
 	var conf Config
 	User, err := user.Current()
-	utilities.Check(err)
-
-	conf.User.Author = User.Username
+	if err != nil {
+		utilities.Check(err, false, "Unable to fetch current system user... Proceeding with default. (non-fatal)")
+		conf.User.Author = ""
+	} else {
+		conf.User.Author = User.Username
+	}
 
 	conf.Compiler.Preference = "rgoc"
 
@@ -36,7 +39,7 @@ func NewConfig() *Config {
 func (conf *Config) Load(path string) *Config {
 
 	_, err := toml.DecodeFile(path, &conf)
-	utilities.Check(err)
+	utilities.Check(err, true, "Attempt to decode config failed during a load!")
 	return conf
 }
 
@@ -46,26 +49,30 @@ func (conf *Config) Dump(path string) *Config {
 	var f *os.File
 	if _, err := os.Stat(path); os.IsExist(err) {
 		f, err = os.OpenFile(path, os.O_WRONLY, os.ModeType)
-		utilities.Check(err)
+		utilities.Check(err, true, "Attempt to open config for dump failed!")
 	} else {
 		f, err = os.Create(path)
-		utilities.Check(err)
+		utilities.Check(err, true, "Attempt to recover broken config during dump failed!")
 	}
 
 	defer f.Close()
 
 	buffer := new(bytes.Buffer)
 	err := toml.NewEncoder(buffer).Encode(conf)
-	utilities.Check(err)
+	utilities.Check(err, true, "Attempt to encode config into writeable bytes failed!")
 
 	f.Write(buffer.Bytes())
 
 	return conf
 }
 
-//Generates an entirely new config directory with all the bells and whistles (licenses, templates, etc)
+// Generates an entirely new config directory with all the bells and whistles (licenses, templates, etc)
 func GenerateNewConfigDirectory() {
-	utilities.Check(os.Mkdir(utilities.GetRectxPath(), os.ModePerm))
+	if err := os.Mkdir(utilities.GetRectxPath(), os.ModePerm); os.IsPermission(err) {
+		utilities.Check(err, true, "Attempt to create config directory failed due to permissions!")
+	} else {
+		utilities.Check(err, true, "Attempt to create config directory failed for unknown an unknown reason!")
+	}
 	NewConfig().Dump(utilities.GetRectxPath() + "/config.toml")
 	GenerateLicenses()
 	GenerateTemplates()

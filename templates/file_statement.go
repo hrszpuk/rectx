@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"fmt"
 	"os"
 	"rectx/utilities"
 )
@@ -21,10 +22,12 @@ func NewFileStatement(name string, sourceDir string, content string) *FileStatem
 
 func (file *FileStatement) Generate(projectName string) {
 	f, err := os.Create(projectName + "/" + file.SourceDir + "/" + file.Name)
-	utilities.Check(err)
+	message := fmt.Sprintf("Attempt to generate file \"%s\" during template-based project generation failed.", file.Name)
+	utilities.Check(err, true, message)
 
 	_, err = f.WriteString(file.Content)
-	utilities.Check(err)
+	message = fmt.Sprintf("Attempt to write template-specified content to \"%s\" (file) failed.", file.Name)
+	utilities.Check(err, true, message)
 }
 
 func (file *FileStatement) GetName() string {

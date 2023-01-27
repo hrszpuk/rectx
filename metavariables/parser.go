@@ -1,4 +1,5 @@
 package metavariables
+// I love how this entire package can just be replaced with a strings.Replace() function LMAO
 
 type Parser struct {
 	content       string
@@ -16,7 +17,7 @@ func NewParser(content string, metavariables map[string]string) *Parser {
 	}
 }
 
-func (p *Parser) parse() string {
+func (p *Parser) Parse() string {
 	for p.index < len(p.content) {
 		if p.current() == "%" {
 			// Write %...% to a buffer

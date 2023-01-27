@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"rectx/utilities"
 )
 
 var (
@@ -72,6 +73,7 @@ func initFlags() {
 
 	for _, cmd := range CMDS {
 		cmd.BoolVar(&helpFlag, "help", false, "Shows a specific help message for the command used.")
+		cmd.BoolVar(&utilities.DebugFlag, "xx", false, "Shows full error information when there is a error.")
 	}
 }
 
@@ -144,7 +146,7 @@ func ShowHelpMenu() {
 
 }
 
-// The new command help menu. This help menu is specific to the new command. 
+// The new command help menu. This help menu is specific to the new command.
 // This means it will only show new command flags.
 func ShowNewHelpMenu() {
 	ShowUsage("new", false)
@@ -157,7 +159,7 @@ func ShowNewHelpMenu() {
 	newCmd.PrintDefaults()
 }
 
-// The run command help menu. This help menu is specific to the run command. 
+// The run command help menu. This help menu is specific to the run command.
 // This means it will only show run command flags.
 func ShowRunHelpMenu() {
 	ShowUsage("run", false)
@@ -168,7 +170,7 @@ func ShowRunHelpMenu() {
 	runCmd.PrintDefaults()
 }
 
-// The build command help menu. This help menu is specific to the build command. 
+// The build command help menu. This help menu is specific to the build command.
 // This means it will only show build command flags.
 func ShowBuildHelpMenu() {
 	ShowUsage("build", false)
@@ -178,7 +180,7 @@ func ShowBuildHelpMenu() {
 	buildCmd.PrintDefaults()
 }
 
-// The template command help menu. This help menu is specific to the template command. 
+// The template command help menu. This help menu is specific to the template command.
 // This means it will only show template command flags and subcommands.
 func ShowTemplateHelpMenu() {
 	ShowUsage("template", true)
@@ -191,7 +193,7 @@ func ShowTemplateHelpMenu() {
 	templateCmd.PrintDefaults()
 }
 
-// The config command help menu. This help menu is specific to the config command. 
+// The config command help menu. This help menu is specific to the config command.
 // This means it will only show config command flags and subcommands.
 func ShowConfigHelpMenu() {
 	ShowUsage("config", true)
