@@ -91,9 +91,9 @@ func AddTemplate(path string) {
 func RenameTemplate(templateName, newTemplateName string) {
 	dir := utilities.GetRectxPath() + "/templates/"
 	if err := os.Rename(dir+templateName, dir+newTemplateName); os.IsNotExist(err) {
-		utilities.Check(err, true, fmt.Sprintf("Could not rename template %s because it does not exit!"))
+		utilities.Check(err, true, fmt.Sprintf("Could not rename template %s because it does not exit!", templateName))
 	} else {
-		utilities.Check(err, true, fmt.Sprintf("Could not rename template %s due to a lack of permissions!"))
+		utilities.Check(err, true, fmt.Sprintf("Could not rename template %s due to a lack of permissions!", templateName))
 	}
 
 }
