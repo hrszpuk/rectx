@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"rectx/utilities"
 )
@@ -17,7 +16,11 @@ var LICENSES = [...]string{
 }
 
 func GenerateLicenses() {
-	utilities.Check(os.Mkdir(utilities.GetRectxPath()+"/licenses", os.ModePerm))
+	if err := os.Mkdir(utilities.GetRectxPath()+"/licenses", os.ModePerm); os.IsPermission(err) {
+		utilities.Check(err, true, "Attempted to create licenses/ but failed due to a lack of permissions.")
+	} else {
+		utilities.Check(err, true, "Attempted to create licenses/ but failed for an unknown reason.")
+	}
 
 	DownloadLicenses(utilities.GetRectxPath() + "/licenses/")
 	ValidateLicenses()
@@ -26,7 +29,7 @@ func GenerateLicenses() {
 func DownloadLicenses(path string) {
 	for _, license := range LICENSES {
 		utilities.DownloadFile(
-			"https://hrszpuk.github.io/rectx/licenses/"+license,
+			utilities.GetRectxDownloadSource()+"/licenses/"+license,
 			path+license,
 		)
 	}
@@ -34,19 +37,11 @@ func DownloadLicenses(path string) {
 
 func ValidateLicenses() {
 	dir, err := os.ReadDir(utilities.GetRectxPath() + "/licenses")
-	utilities.Check(err)
+	utilities.ErrCheckReadDir(err, "licenses/", GenerateLicenses)
 
 	if len(dir) < 1 {
 		DownloadLicenses(utilities.GetRectxPath() + "/licenses/")
 		dir, err = os.ReadDir(utilities.GetRectxPath() + "/licenses")
-		utilities.Check(err)
-
-		if len(dir) < 1 {
-			fmt.Println("ERROR: Could not download licenses for an unknown reason!")
-		}
-	}
-
-	if len(dir) < 3 {
-		fmt.Printf("ERROR: Expected at least %d licenses but only found %d! You may want to regenerate the template files using \"rectx config regenerate --licenses\"!\n", len(TEMPLATE), len(dir))
+		utilities.ErrCheckReadDir(err, "licenses/", GenerateLicenses)
 	}
 }

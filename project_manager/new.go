@@ -10,16 +10,15 @@ import (
 func New() {
 	pc := projectConfig.CreateDefaultConfig()
 
-	fmt.Println("Project name: ")
+	fmt.Print("Project name: ")
 	fmt.Scanln(&pc.Project.Name)
 
-	var authors string
-	fmt.Println("Authors (comma separated): ")
-	fmt.Scanln(&authors)
-	pc.Project.Authors = strings.Split(authors, ",")
+	var author string
+	fmt.Print("Author: ")
+	fmt.Scanln(&author)
+	pc.Project.Authors = append(pc.Project.Authors, author)
 
-	fmt.Println("Version (MAJOR.MINOR.PATCH): ")
-	fmt.Scanln(&pc.Project.Version)
+	pc.Project.Version = GetVersion()
 
 	templateName := GetTemplate()
 
@@ -30,15 +29,16 @@ func New() {
 
 func GetTemplate() string {
 	fmt.Println("Pick a template:")
-	var templateList []string = templates.FetchTemplates()
+	var templateList = templates.FetchTemplates()
 	for _, name := range templateList {
-		fmt.Printf("- %s\n", name)
+		fmt.Printf("- %s\n", strings.Replace(name, ".rectx.template", "", 1))
 	}
 
 	var chosenTemplateName string
 	validTemplateChosen := false
 	fmt.Println("\nType the name of the template you want to use: ")
 	fmt.Scanln(&chosenTemplateName)
+	chosenTemplateName += ".rectx.template"
 	for _, name := range templateList {
 		if chosenTemplateName == name {
 			validTemplateChosen = true
@@ -47,9 +47,27 @@ func GetTemplate() string {
 	}
 
 	if !validTemplateChosen {
-		fmt.Printf("\"%s\" is not a valid template!", chosenTemplateName)
+		fmt.Printf("\"%s\" is not a valid template!\n", chosenTemplateName)
 		return GetTemplate()
 	} else {
 		return chosenTemplateName
+	}
+}
+
+func GetVersion() string {
+	version := ""
+	fmt.Print("Version: ")
+	fmt.Scanln(&version)
+	badCharacters := "abcdefghijklmnopqrstuvwxyz"
+	badCharacters += strings.ToUpper(badCharacters)
+	badCharacters += "!£$%^&*()\"'@~#[]{}:;<>,-=+_/?|\\`¬"
+	if strings.ContainsAny(version, badCharacters) {
+		fmt.Println("Warning: Version number contained bad characters! " +
+			"Version numbers can only contain numbers (0-9) and dots (.). " +
+			"\nFor Example: 1.2.3, 0.0.1, 8.394.13305" +
+			"\nPlease submit another version number")
+		return GetVersion()
+	} else {
+		return version
 	}
 }

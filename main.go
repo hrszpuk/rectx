@@ -19,6 +19,9 @@ func main() {
 	}
 
 	switch os.Args[1] {
+
+	// rectx new|build|run
+	// These commands have no subcommands and their flags are handled in the project_manager module.
 	case "new":
 		handleParseErrorAndHelpFlag(newCmd, newCmd.Parse(os.Args[2:]), ShowNewHelpMenu)
 		project_manager.New()
@@ -28,43 +31,69 @@ func main() {
 	case "run":
 		handleParseErrorAndHelpFlag(runCmd, runCmd.Parse(os.Args[2:]), ShowRunHelpMenu)
 		project_manager.Run()
+	
+	// rectx template|templates
+	// I allow both "templates" and "template" because both go well with the subcommands and I kept putting the wrong one.
 	case "templates":
 		fallthrough
 	case "template":
 		handleParseErrorAndHelpFlag(templateCmd, templateCmd.Parse(os.Args[2:]), ShowTemplateHelpMenu)
-		if len(os.Args) == 3 {
-			if os.Args[2] == "list" {
-				fmt.Println("Listing all templates found:")
-				for i, files := range templates.ListTemplates() {
-					fmt.Printf("%d. %s\n", i+1, files)
-				}
+		EnsureArguments(3, "template")
+
+		switch os.Args[2] {
+
+		// `rectx template list` lists all the templates in the rectx template directory
+		case "list":
+			fmt.Println("Listing all templates found:")
+			for i, files := range templates.ListTemplates() {
+				fmt.Printf("%d. %s\n", i+1, files)
 			}
-		} else if len(os.Args) == 4 {
-			switch os.Args[2] {
-			case "add":
-				if !strings.HasSuffix(os.Args[3], ".rectx.template") {
-					fmt.Printf("Whoops \"%s\" isn't a .rectx.template file!\n", os.Args[3])
-					os.Exit(1)
-				} else {
-					config.AddTemplate(os.Args[3])
-				}
-			case "test":
-				templates.Test(os.Args[3])
-			case "default":
-				config.SetDefaultTemplate(os.Args[3])
-			case "snapshot":
-				templates.Snapshot(os.Args[3])
-			default:
-				fmt.Printf("Unknown subcommand \"%s\"! Maybe try rectx templates --help for a list of subcommands.", os.Args[3])
+
+		// `rectx template add <path/to/template>` copies a .rectx.template into the rectx template directory
+		// Although this is a template subcommand, it uses the config package because it manages the ~/.rectx config directory where the templates are stored.
+		case "add":
+			EnsureArguments(4, "template add")
+			// TODO Maybe check if file exists first?
+			if !strings.HasSuffix(os.Args[3], ".rectx.template") {
+				fmt.Printf("Whoops \"%s\" isn't a .rectx.template file!\n", os.Args[3])
+				os.Exit(1)
+			} else {
+				config.AddTemplate(os.Args[3])
 			}
-		} else if len(os.Args) == 5 {
-			switch os.Args[2] {
-			case "rename":
-				config.RenameTemplate(os.Args[3], os.Args[4])
-			}
+
+		// `rectx template test <template>` parses and generates using a template file in a temporary directory.
+		// This command was designed to allow you to test for errors in a template file. Errors are reported to the command line.
+		case "test":
+			EnsureArguments(4, "template test")
+			templates.Test(os.Args[3])
+
+		// `rectx template default <template>` sets the provided template as the default template for project generation.
+		// This means if you don't select a template this template will be used. The default template is `default.rect.template`.
+		// Although this is a template subcommand, it uses the config package because that package manages the rectx config where the default template is stored.
+		case "default":
+			EnsureArguments(4, "template default")
+			config.SetDefaultTemplate(os.Args[3])
+
+		// `rectx template snapshot <path>` generates a .rectx.template file from the information provided in the directory provided.
+		// NOTE: the template name will be taken from the directory name, commands should be held within a file called "commands"
+		case "snapshot":
+			// TODO maybe an exlude flag should be added so people can avoid files named "commands" that have other purposes?
+			EnsureArguments(4, "template snapshot")
+			templates.Snapshot(os.Args[3])
+
+		// `rectx template rename <templateName> <newTemplateName>`
+		case "rename":
+			EnsureArguments(5, "template rename")
+			config.RenameTemplate(os.Args[3], os.Args[4])
+		default:
+			fmt.Printf("Unknown subcommand \"%s\"! Maybe try rectx templates --help for a list of subcommands...\n", os.Args[2])
 		}
+
+	// rectx config 
+	// TODO I should probably start this before it's too late - Tokorv
 	case "config":
 		handleParseErrorAndHelpFlag(configCmd, configCmd.Parse(os.Args[2:]), ShowConfigHelpMenu)
+
 	case "help":
 		fallthrough
 	case "--help":
@@ -72,6 +101,38 @@ func main() {
 	case "-h":
 		ShowHelpMenu()
 	default:
-		log.Fatalf("Unknown command \"%s\"! If you're looking for a certain command try \"rectx --help\"!\n", os.Args[1])
+		log.Fatalf("Unknown command \"%s\"!\nIf you're looking for a certain command try \"rectx --help\"!\n", os.Args[1])
+	}
+}
+
+// This function is used to check if the required number of arguments is met. 
+// If so, the function will do nothing, otherwise it will display an error message, and a usage for the command provided.
+// If only a command that requires a subcommand is supplied (via command argument) then a <subcommand> will be displayed
+// in the usage message. Otherwise, only <arg> symbols will be displayed.
+func EnsureArguments(requiredArgumentCount int, command string) {
+
+	if requiredArgumentCount > len(os.Args) {
+		argumentCount := requiredArgumentCount - len(os.Args)
+		displayUsageWithSubcommand := false
+
+		fmt.Printf("Not enough arguments to run \"rectx %s\"!\n", command)
+		fmt.Print("Usage: rectx ")
+
+		// We print a <subcommand> only if command is a command that requires subcommands.
+		// Otheriwse, we can just display the actual command + subcommand used.
+		for _, COMMAND := range []string{"template", "templates", "config"} {
+			if command == COMMAND {
+				fmt.Print(command + " <subcommand> ")
+				displayUsageWithSubcommand = true
+			}
+		}
+		if displayUsageWithSubcommand {
+			argumentCount--
+		} else {
+			fmt.Print(command)
+		}
+
+		fmt.Printf(" %s\n", strings.Repeat("<arg> ", argumentCount))
+		os.Exit(1)
 	}
 }
