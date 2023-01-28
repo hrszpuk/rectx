@@ -84,12 +84,12 @@ func (config *ProjectConfig) Dump(path string) {
 	f, err := os.OpenFile(path, os.O_WRONLY, os.ModeType)
 	utilities.Check(err, true, "Attempted to open file in write only mode but failed for an unknown reason.")
 
-	defer utilities.Check(f.Close(), true, "Attempt to close project config file and failed... Somehow?")
-
 	buffer := new(bytes.Buffer)
 	err = toml.NewEncoder(buffer).Encode(config)
 	utilities.Check(err, true, "Attempted to deserialize config data but failed.")
 
 	_, err = f.WriteString(buffer.String())
 	utilities.Check(err, true, fmt.Sprintf("Attempted to write data to \"%s\" but failed for an unknown reason!", path))
+
+	utilities.Check(f.Close(), true, "Attempt to close project config file and failed... Somehow?")
 }

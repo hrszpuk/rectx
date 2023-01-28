@@ -7,11 +7,30 @@ import (
 	projectConfig "rectx/project_manager/config"
 	"rectx/templates"
 	"rectx/utilities"
+	"strings"
 )
 
 func CreateNewProject(config *projectConfig.ProjectConfig, templateName string) {
 	fmt.Print("Generating project... ")
 
+	if file, err := os.Stat(config.Project.Name); err == nil {
+		tyype := ""
+		if file.IsDir() {
+			tyype = "directory"
+		} else {
+			tyype = "file"
+		}
+
+		answer := ""
+		fmt.Printf("A %s by the name of \"%s\" already exists would you like to overwrite it? [Y/n]: ", tyype, config.Project.Name)
+		fmt.Scanln(&answer)
+
+		for _, item := range []string{"Y", "YES", "YEAH", "MHM", "SURE", "1", "TRUE"} {
+			if answer == item || answer == strings.ToLower(item) {
+				utilities.Check(os.RemoveAll(config.Project.Name), true, "Could not remove pre-existing project directory in attempt to overwrite!")
+			}
+		}
+	}
 	utilities.Check(os.Mkdir(config.Project.Name, 0750), true, "Attempt to create project directory failed... Permission levels may not be sufficient?")
 
 	f, err := os.ReadFile(utilities.GetRectxPath() + "/templates/" + templateName)
