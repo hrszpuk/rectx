@@ -166,7 +166,7 @@ func Snapshot(path string) {
 	file, err := os.Create(templateName + ".rectx.template")
 	utilities.Check(err, true, "Attempt to create .rectx.template file failed for an unknown reason!")
 	_, err = file.WriteString(templateContents)
-	defer file.Close()
 	utilities.Check(err, true, "Attempt to write template contents to .rectx.template file failed.")
+	utilities.Check(file.Close(), false, "Could not close generated template file!")
 	fmt.Printf("Snapshot complete... Generated \"%s\"!\n", templateName+".rectx.template")
 }
