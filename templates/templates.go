@@ -51,11 +51,11 @@ func Test(templateName string) {
 	file, err := os.ReadFile(utilities.GetRectxPath() + "/templates/" + templateName)
 	utilities.Check(err, true, fmt.Sprintf("Attempt to read template \"%s\" failed.", templateName))
 
-	temp_dir := utilities.GetRectxPath() + "/.temp"
-	err = os.Mkdir(temp_dir, os.ModeDir)
+	tempDir := utilities.GetRectxPath() + "/.temp"
+	err = os.Mkdir(tempDir, os.ModeDir)
 	if err != nil {
-		temp_dir = ".temp"
-		err = os.Mkdir(temp_dir, os.ModeDir)
+		tempDir = ".temp"
+		err = os.Mkdir(tempDir, os.ModeDir)
 		utilities.Check(err, true, "Attempt to generate a temporary testing environment failed!")
 	}
 
@@ -72,7 +72,7 @@ func Test(templateName string) {
 			fmt.Printf("ERROR: %s\n", statement.GetName())
 		} else {
 			fmt.Printf("Generating \"%s\"...", statement.GetType())
-			statement.Generate(temp_dir)
+			statement.Generate(tempDir)
 			fmt.Print("DONE! ")
 			if statement.GetType() == "FILE" {
 				FileStatementCounter++
@@ -87,9 +87,9 @@ func Test(templateName string) {
 		}
 	}
 
-	err = os.RemoveAll(temp_dir)
+	err = os.RemoveAll(tempDir)
 	message := "Attempt to remove testing folder failed."
-	if temp_dir == ".temp" {
+	if tempDir == ".temp" {
 		message += ".. You may have to remove this file manually. (sudo rm ./.temp -rf)"
 	}
 	utilities.Check(err, false, message)
