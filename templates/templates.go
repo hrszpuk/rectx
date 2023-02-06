@@ -168,5 +168,5 @@ func Snapshot(path string) {
 	_, err = file.WriteString(templateContents)
 	defer file.Close()
 	utilities.Check(err, true, "Attempt to write template contents to .rectx.template file failed.")
-	fmt.Printf("Snapshot complete... Generated \"%s\"\n!", templateName+".rectx.template")
+	fmt.Printf("Snapshot complete... Generated \"%s\"!\n", templateName+".rectx.template")
 }
