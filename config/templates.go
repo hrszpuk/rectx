@@ -47,9 +47,12 @@ func ValidateTemplates() {
 
 // rectx template add <path/to/template>
 func AddTemplate(path string) {
-	if !strings.HasSuffix(path, ".rectx.template") {
-		fmt.Printf("Unable to add template because \"%s\" is not a rectx template file!", path)
-		os.Exit(1)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		msg := fmt.Sprintf("Unable to add template because \"%s\" does not exist!", path)
+		utilities.Check(err, true, msg)
+	} else if !strings.HasSuffix(path, ".rectx.template") {
+		msg := fmt.Sprintf("Unable to add template because \"%s\" is not a rectx template file!", path)
+		utilities.Check(err, true, msg)
 	}
 
 	bytes, err := os.ReadFile(path)
