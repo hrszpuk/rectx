@@ -51,11 +51,11 @@ func Test(templateName string) {
 	file, err := os.ReadFile(utilities.GetRectxPath() + "/templates/" + templateName)
 	utilities.Check(err, true, fmt.Sprintf("Attempt to read template \"%s\" failed.", templateName))
 
-	temp_dir := utilities.GetRectxPath() + "/.temp"
-	err = os.Mkdir(temp_dir, os.ModeDir)
+	tempDir := utilities.GetRectxPath() + "/.temp"
+	err = os.Mkdir(tempDir, os.ModeDir)
 	if err != nil {
-		temp_dir = ".temp"
-		err = os.Mkdir(temp_dir, os.ModeDir)
+		tempDir = ".temp"
+		err = os.Mkdir(tempDir, os.ModeDir)
 		utilities.Check(err, true, "Attempt to generate a temporary testing environment failed!")
 	}
 
@@ -72,7 +72,7 @@ func Test(templateName string) {
 			fmt.Printf("ERROR: %s\n", statement.GetName())
 		} else {
 			fmt.Printf("Generating \"%s\"...", statement.GetType())
-			statement.Generate(temp_dir)
+			statement.Generate(tempDir)
 			fmt.Print("DONE! ")
 			if statement.GetType() == "FILE" {
 				FileStatementCounter++
@@ -87,9 +87,9 @@ func Test(templateName string) {
 		}
 	}
 
-	err = os.RemoveAll(temp_dir)
+	err = os.RemoveAll(tempDir)
 	message := "Attempt to remove testing folder failed."
-	if temp_dir == ".temp" {
+	if tempDir == ".temp" {
 		message += ".. You may have to remove this file manually. (sudo rm ./.temp -rf)"
 	}
 	utilities.Check(err, false, message)
@@ -122,7 +122,23 @@ func Snapshot(path string) {
 
 		if dir.IsDir() {
 			templateContents += fmt.Sprintf("FOLDER %s %s\n", name, sourceDir)
-		} else if !dir.IsDir() && strings.Split(strings.ToLower(name), ".")[0] == "commands" {
+		} else if !dir.IsDir() && func() bool {
+			filename := strings.ToLower(name)
+			if filename != "commands" {
+				return false
+			}
+			fileExtension := strings.Split(filename, ".")
+			if len(fileExtension) < 2 {
+				return true
+			}
+			extension := fileExtension[1]
+			for _, allowedExtensions := range []string{"txt", "rectx"} {
+				if extension == allowedExtensions {
+					return true
+				}
+			}
+			return false
+		}() {
 			fileBytes, err := os.ReadFile(templateName + "/" + sourceDir + name)
 			utilities.Check(err, true, fmt.Sprintf("Attempt to read \"%s\" for command statements failed.", name))
 
@@ -133,6 +149,10 @@ func Snapshot(path string) {
 					templateCommands += fmt.Sprintf("COMMAND %s", string(buffer))
 					buffer = []byte{}
 				}
+			}
+
+			if len(buffer) > 0 && buffer[0] != '\n' {
+				templateCommands += fmt.Sprintf("COMMAND %s\n", string(buffer))
 			}
 
 		} else {
@@ -150,7 +170,7 @@ func Snapshot(path string) {
 	file, err := os.Create(templateName + ".rectx.template")
 	utilities.Check(err, true, "Attempt to create .rectx.template file failed for an unknown reason!")
 	_, err = file.WriteString(templateContents)
-	defer file.Close()
 	utilities.Check(err, true, "Attempt to write template contents to .rectx.template file failed.")
-	fmt.Printf("Snapshot complete... Generated \"%s\"\n!", templateName+".rectx.template")
+	utilities.Check(file.Close(), false, "Could not close generated template file!")
+	fmt.Printf("Snapshot complete... Generated \"%s\"!\n", templateName+".rectx.template")
 }
