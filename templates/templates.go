@@ -151,6 +151,10 @@ func Snapshot(path string) {
 				}
 			}
 
+			if len(buffer) > 0 && buffer[0] != '\n' {
+				templateCommands += fmt.Sprintf("COMMAND %s\n", string(buffer))
+			}
+
 		} else {
 			fileContent := "{%@FILE_CONTENT_PLACEHOLDER@%}"
 			fileBytes, err := os.ReadFile(templateName + "/" + sourceDir + name)
