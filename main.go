@@ -31,7 +31,7 @@ func main() {
 	case "run":
 		handleParseErrorAndHelpFlag(runCmd, runCmd.Parse(os.Args[2:]), ShowRunHelpMenu)
 		project_manager.Run()
-	
+
 	// rectx template|templates
 	// I allow both "templates" and "template" because both go well with the subcommands and I kept putting the wrong one.
 	case "templates":
@@ -53,13 +53,7 @@ func main() {
 		// Although this is a template subcommand, it uses the config package because it manages the ~/.rectx config directory where the templates are stored.
 		case "add":
 			EnsureArguments(4, "template add")
-			// TODO Maybe check if file exists first?
-			if !strings.HasSuffix(os.Args[3], ".rectx.template") {
-				fmt.Printf("Whoops \"%s\" isn't a .rectx.template file!\n", os.Args[3])
-				os.Exit(1)
-			} else {
-				config.AddTemplate(os.Args[3])
-			}
+			config.AddTemplate(os.Args[3])
 
 		// `rectx template test <template>` parses and generates using a template file in a temporary directory.
 		// This command was designed to allow you to test for errors in a template file. Errors are reported to the command line.
@@ -89,7 +83,7 @@ func main() {
 			fmt.Printf("Unknown subcommand \"%s\"! Maybe try rectx templates --help for a list of subcommands...\n", os.Args[2])
 		}
 
-	// rectx config 
+	// rectx config
 	// TODO I should probably start this before it's too late - Tokorv
 	case "config":
 		handleParseErrorAndHelpFlag(configCmd, configCmd.Parse(os.Args[2:]), ShowConfigHelpMenu)
@@ -105,7 +99,7 @@ func main() {
 	}
 }
 
-// This function is used to check if the required number of arguments is met. 
+// This function is used to check if the required number of arguments is met.
 // If so, the function will do nothing, otherwise it will display an error message, and a usage for the command provided.
 // If only a command that requires a subcommand is supplied (via command argument) then a <subcommand> will be displayed
 // in the usage message. Otherwise, only <arg> symbols will be displayed.
