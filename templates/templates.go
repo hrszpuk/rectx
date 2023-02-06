@@ -122,7 +122,23 @@ func Snapshot(path string) {
 
 		if dir.IsDir() {
 			templateContents += fmt.Sprintf("FOLDER %s %s\n", name, sourceDir)
-		} else if !dir.IsDir() && strings.Split(strings.ToLower(name), ".")[0] == "commands" {
+		} else if !dir.IsDir() && func() bool {
+			filename := strings.ToLower(name)
+			if filename != "commands" {
+				return false
+			}
+			fileExtension := strings.Split(filename, ".")
+			if len(fileExtension) < 2 {
+				return true
+			}
+			extension := fileExtension[1]
+			for _, allowedExtensions := range []string{"txt", "rectx"} {
+				if extension == allowedExtensions {
+					return true
+				}
+			}
+			return false
+		}() {
 			fileBytes, err := os.ReadFile(templateName + "/" + sourceDir + name)
 			utilities.Check(err, true, fmt.Sprintf("Attempt to read \"%s\" for command statements failed.", name))
 
