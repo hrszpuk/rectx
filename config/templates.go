@@ -61,26 +61,25 @@ func AddTemplate(path string) {
 	} else if os.IsPermission(err) {
 		utilities.Check(err, true, "Attempted to load template but failed due to a lack of permissions.")
 	} else {
-		utilities.Check(err, true, "Attempted to load template but failed for unkown reasons.")
+		utilities.Check(err, true, "Attempted to load template but failed for an unknown reason.")
 	}
 
 	ValidateTemplates()
 	pathSplit := strings.Split(path, "/")
 
 	file, err := os.Create(utilities.GetRectxPath() + "/templates/" + pathSplit[len(pathSplit)-1])
-	defer file.Close()
 
 	if os.IsPermission(err) {
 		utilities.Check(err, true, "Attempted to create internal template file but failed due to a lack of permissions.")
 	} else {
-		utilities.Check(err, true, "Attempted to create internal template file but failed for unkown reasons.")
+		utilities.Check(err, true, "Attempted to create internal template file but failed for unknown reasons.")
 	}
 
 	_, err = file.WriteString(string(bytes))
 	if os.IsPermission(err) {
-		utilities.Check(err, true, "Attempted to write to internal tempalte file but failed due to a lack of permissions.")
+		utilities.Check(err, true, "Attempted to write to internal template file but failed due to a lack of permissions.")
 	} else {
-		utilities.Check(err, true, "Attempted to write to internal tempalte file but failed for unkown reasons.")
+		utilities.Check(err, true, "Attempted to write to internal template file but failed for unknown reasons.")
 	}
 
 	fmt.Printf("Added new template called \"%s\"!", pathSplit[len(pathSplit)-1])
@@ -88,6 +87,8 @@ func AddTemplate(path string) {
 		"If you want to rename this template use: rectx template rename <name> <newName>",
 		"For more information on templates please use rectx template --help",
 	)
+
+	utilities.Check(file.Close(), false, "Was unable to close file!")
 }
 
 // rectx template rename <templateName> <newTemplateName>
