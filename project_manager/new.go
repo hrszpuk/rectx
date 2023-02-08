@@ -5,6 +5,7 @@ import (
 	"rectx/licenses"
 	projectConfig "rectx/project_manager/config"
 	"rectx/templates"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -28,9 +29,9 @@ func New() {
 	variables["%PROJECT_NAME%"] = pc.Project.Name
 	variables["%AUTHOR%"] = pc.Project.Authors[0]
 	year, month, day := time.Now().Date()
-	variables["%YEAR%"] = string(rune(year))
+	variables["%YEAR%"] = strconv.Itoa(year)
 	variables["%MONTH%"] = month.String()
-	variables["%DAY%"] = string(rune(day))
+	variables["%DAY%"] = strconv.Itoa(day)
 
 	CreateNewProject(pc, variables)
 
