@@ -7,8 +7,8 @@ utilities:
   - any: ["utilities/**/*"]
   
 config:
-  - any: ["config/*"]
-  - any: ["config/**/*"]
+  - any: ["ProjectConfig/*"]
+  - any: ["ProjectConfig/**/*"]
   
 metavariables:
   - any: ["metavariables/*"]

@@ -9,8 +9,8 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-// Generates a new config file with the default field values.
-// When loading a config, you will create a new default config then overwrite it using the Load(path) method.
+// Generates a new ProjectConfig file with the default field values.
+// When loading a ProjectConfig, you will create a new default ProjectConfig then overwrite it using the Load(path) method.
 func NewConfig() *Config {
 
 	var conf Config
@@ -35,50 +35,50 @@ func NewConfig() *Config {
 	return &conf
 }
 
-// Loads the values from the config file path provided and overwrites the current field values.
+// Loads the values from the ProjectConfig file path provided and overwrites the current field values.
 func (conf *Config) Load(path string) *Config {
 
 	_, err := toml.DecodeFile(path, &conf)
-	utilities.Check(err, true, "Attempt to decode config failed during a load!")
+	utilities.Check(err, true, "Attempt to decode ProjectConfig failed during a load!")
 	return conf
 }
 
-// Dumps the values of the config struct into a config file.
+// Dumps the values of the ProjectConfig struct into a ProjectConfig file.
 func (conf *Config) Dump(path string) *Config {
 
 	var f *os.File
 	if _, err := os.Stat(path); os.IsExist(err) {
 		f, err = os.OpenFile(path, os.O_WRONLY, os.ModeType)
-		utilities.Check(err, true, "Attempt to open config for dump failed!")
+		utilities.Check(err, true, "Attempt to open ProjectConfig for dump failed!")
 	} else {
 		f, err = os.Create(path)
-		utilities.Check(err, true, "Attempt to recover broken config during dump failed!")
+		utilities.Check(err, true, "Attempt to recover broken ProjectConfig during dump failed!")
 	}
 
 	defer f.Close()
 
 	buffer := new(bytes.Buffer)
 	err := toml.NewEncoder(buffer).Encode(conf)
-	utilities.Check(err, true, "Attempt to encode config into writeable bytes failed!")
+	utilities.Check(err, true, "Attempt to encode ProjectConfig into writeable bytes failed!")
 
 	f.Write(buffer.Bytes())
 
 	return conf
 }
 
-// Generates an entirely new config directory with all the bells and whistles (licenses, templates, etc)
+// Generates an entirely new ProjectConfig directory with all the bells and whistles (licenses, templates, etc)
 func GenerateNewConfigDirectory() {
 	if err := os.Mkdir(utilities.GetRectxPath(), os.ModePerm); os.IsPermission(err) {
-		utilities.Check(err, true, "Attempt to create config directory failed due to permissions!")
+		utilities.Check(err, true, "Attempt to create ProjectConfig directory failed due to permissions!")
 	} else {
-		utilities.Check(err, true, "Attempt to create config directory failed for unknown an unknown reason!")
+		utilities.Check(err, true, "Attempt to create ProjectConfig directory failed for unknown an unknown reason!")
 	}
-	NewConfig().Dump(utilities.GetRectxPath() + "/config.toml")
+	NewConfig().Dump(utilities.GetRectxPath() + "/ProjectConfig.toml")
 	GenerateLicenses()
 	GenerateTemplates()
 }
 
-// Ensures all parts of the config exist and regenerates them if they do not.
+// Ensures all parts of the ProjectConfig exist and regenerates them if they do not.
 func ValidateConfig() {
 	home := utilities.GetRectxPath()
 
@@ -91,8 +91,8 @@ func ValidateConfig() {
 		return
 	}
 
-	if _, err := os.Stat(home + "/config.toml"); os.IsNotExist(err) {
-		NewConfig().Dump(utilities.GetRectxPath() + "/config.toml")
+	if _, err := os.Stat(home + "/ProjectConfig.toml"); os.IsNotExist(err) {
+		NewConfig().Dump(utilities.GetRectxPath() + "/ProjectConfig.toml")
 	}
 
 	if _, err := os.Stat(home + "/templates"); os.IsNotExist(err) {

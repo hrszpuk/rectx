@@ -1,4 +1,4 @@
-package config
+package ProjectConfig
 
 import (
 	"bytes"
@@ -76,13 +76,13 @@ func CreateDefaultConfig() *ProjectConfig {
 
 func (config *ProjectConfig) Load(path string) {
 	_, err := toml.DecodeFile(path, config)
-	utilities.Check(err, true, "Attempted to load project config but failed.")
+	utilities.Check(err, true, "Attempted to load project ProjectConfig but failed.")
 }
 
 func (config *ProjectConfig) Dump(path string) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		_, err = os.Create(path)
-		utilities.Check(err, true, "Attempted to recover non-existent project config but failed to recover.")
+		utilities.Check(err, true, "Attempted to recover non-existent project ProjectConfig but failed to recover.")
 	}
 
 	f, err := os.OpenFile(path, os.O_WRONLY, os.ModeType)
@@ -90,10 +90,10 @@ func (config *ProjectConfig) Dump(path string) {
 
 	buffer := new(bytes.Buffer)
 	err = toml.NewEncoder(buffer).Encode(config)
-	utilities.Check(err, true, "Attempted to deserialize config data but failed.")
+	utilities.Check(err, true, "Attempted to deserialize ProjectConfig data but failed.")
 
 	_, err = f.WriteString(buffer.String())
 	utilities.Check(err, true, fmt.Sprintf("Attempted to write data to \"%s\" but failed for an unknown reason!", path))
 
-	utilities.Check(f.Close(), true, "Attempt to close project config file and failed... Somehow?")
+	utilities.Check(f.Close(), true, "Attempt to close project ProjectConfig file and failed... Somehow?")
 }

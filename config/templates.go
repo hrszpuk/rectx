@@ -109,7 +109,7 @@ func SetDefaultTemplate(templateName string) {
 		fmt.Printf("Could not find template \"%s\"!\n", templateName)
 		os.Exit(1)
 	}
-	configPath := utilities.GetRectxPath() + "config.toml"
+	configPath := utilities.GetRectxPath() + "ProjectConfig.toml"
 	conf := NewConfig().Load(configPath)
 	conf.Template.Default = templateName
 	conf.Dump(configPath)

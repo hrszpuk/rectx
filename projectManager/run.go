@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	ProjectConfig "rectx/projectManager/config"
+	ProjectConfig "rectx/projectManager/ProjectConfig"
 	"rectx/utilities"
 )
 
@@ -13,8 +13,8 @@ func Run() {
 
 	// TODO this error check should be moved into Load() later
 	if _, err := os.Stat("project.rectx"); os.IsNotExist(err) {
-		utilities.Check(err, true, "Could not find project.rectx config within current directory!")
-		fmt.Println("Could not find project.rectx config within current directory!")
+		utilities.Check(err, true, "Could not find project.rectx ProjectConfig within current directory!")
+		fmt.Println("Could not find project.rectx ProjectConfig within current directory!")
 	}
 
 	conf.Load("project.rectx")

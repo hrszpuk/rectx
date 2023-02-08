@@ -3,7 +3,7 @@ package projectManager
 import (
 	"fmt"
 	"rectx/licenses"
-	projectConfig "rectx/projectManager/config"
+	projectConfig "rectx/projectManager/ProjectConfig"
 	"rectx/templates"
 	"strings"
 )

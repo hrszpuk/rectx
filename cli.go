@@ -29,7 +29,7 @@ var (
 	templateCmd               = flag.NewFlagSet("template", flag.ExitOnError)
 	templateSubcommands       = []string{"list", "add", "snapshot", "setDefault", "rename"}
 	templateSubcommandDetails = []string{
-		"Lists all the templates in the rectx config directory.",
+		"Lists all the templates in the rectx ProjectConfig directory.",
 		"Adds a new template file (.rectx.template required).",
 		"Reads the folders/files of a directory and generates a .rectx.template file.",
 		"Set a default template that will be auto selected for your projects.",
@@ -39,19 +39,19 @@ var (
 		"(None)", "path/to/file", "path/to/folder", "template-name", "template-name new-template-name",
 	}
 
-	// rectx config <subcommand> [optional]
-	configCmd               = flag.NewFlagSet("config", flag.ExitOnError)
+	// rectx ProjectConfig <subcommand> [optional]
+	configCmd               = flag.NewFlagSet("ProjectConfig", flag.ExitOnError)
 	configSubcommands       = []string{"validate", "regenerate", "reset", "set"}
 	configSubcommandDetails = []string{
-		"Checks rectx global config data does not contain any errors.",
-		"Downloads any missing rectx config data.",
-		"Reset a value to it's default in the rectx global config.",
-		"Change a value in the rectx global config.",
+		"Checks rectx global ProjectConfig data does not contain any errors.",
+		"Downloads any missing rectx ProjectConfig data.",
+		"Reset a value to it's default in the rectx global ProjectConfig.",
+		"Change a value in the rectx global ProjectConfig.",
 	}
 	configSubcommandArguments = []string{
 		"(None)", "(None)", "key-name", "key-name new-key-value",
 	}
-	configFileFlag bool // --config
+	configFileFlag bool // --ProjectConfig
 	templatesFlag  bool // --templates
 	licensesFlag   bool // --licenses
 	allFlag        bool // --all
@@ -88,12 +88,12 @@ func initNewFlags() {
 	newCmd.BoolVar(&noPromptFlag, "noPrompt", false, "Don't show the project prompt (generate based off defaults and provided flags).")
 }
 
-// This function intitalises all of the rectx config command flags variables in declared above.
+// This function intitalises all of the rectx ProjectConfig command flags variables in declared above.
 func initConfigFlags() {
-	configCmd.BoolVar(&configFileFlag, "config", false, "Specifies the rectx config file specifically.")
+	configCmd.BoolVar(&configFileFlag, "ProjectConfig", false, "Specifies the rectx ProjectConfig file specifically.")
 	configCmd.BoolVar(&templatesFlag, "templates", false, "Specifies the rectx templates specifically.")
 	configCmd.BoolVar(&licensesFlag, "licenses", false, "Specifies the rectx licenses specifically.")
-	configCmd.BoolVar(&allFlag, "all", false, "Specifically validate/regenerate the entire rectx config directory.")
+	configCmd.BoolVar(&allFlag, "all", false, "Specifically validate/regenerate the entire rectx ProjectConfig directory.")
 }
 
 // This function intitalises all of the rectx build command flags variables in declared above.
@@ -121,7 +121,7 @@ func ShowHelpMenu() {
 	ShowUsage("<command>", true)
 	for _, command := range CMDS {
 		name := command.Name()
-		if name == "template" || name == "config" {
+		if name == "template" || name == "ProjectConfig" {
 			name += " [subcommand]"
 		}
 		fmt.Printf("\n> rectx %s [flags] [arguments]\n\n", name)
@@ -132,7 +132,7 @@ func ShowHelpMenu() {
 				fmt.Printf("         %s\n", templateSubcommandDetails[i])
 			}
 			fmt.Println()
-		} else if name == "config [subcommand]" {
+		} else if name == "ProjectConfig [subcommand]" {
 			fmt.Printf("  [subcommands]\n")
 			for i, c := range configSubcommands {
 				fmt.Printf("  %s\n", c)
@@ -193,14 +193,14 @@ func ShowTemplateHelpMenu() {
 	templateCmd.PrintDefaults()
 }
 
-// The config command help menu. This help menu is specific to the config command.
-// This means it will only show config command flags and subcommands.
+// The ProjectConfig command help menu. This help menu is specific to the ProjectConfig command.
+// This means it will only show ProjectConfig command flags and subcommands.
 func ShowConfigHelpMenu() {
-	ShowUsage("config", true)
-	fmt.Printf("\n  [details]\n  Manage the rectx global config." +
+	ShowUsage("ProjectConfig", true)
+	fmt.Printf("\n  [details]\n  Manage the rectx global ProjectConfig." +
 		"\n  This subcommands has little to do with project.rectx files." +
-		"\n  This is for the global rectx config used to configure rectx itself." +
-		"\n  Most importantly, the config subcommands can be used to fix rectx issues with templates, licenses, and more.\n\n")
+		"\n  This is for the global rectx ProjectConfig used to configure rectx itself." +
+		"\n  Most importantly, the ProjectConfig subcommands can be used to fix rectx issues with templates, licenses, and more.\n\n")
 	PrintSubcommands(configSubcommands, configSubcommandDetails, configSubcommandArguments)
 	fmt.Println("\n  [flags]")
 	configCmd.PrintDefaults()

@@ -51,7 +51,7 @@ func main() {
 			}
 
 		// `rectx template add <path/to/template>` copies a .rectx.template into the rectx template directory
-		// Although this is a template subcommand, it uses the config package because it manages the ~/.rectx config directory where the templates are stored.
+		// Although this is a template subcommand, it uses the ProjectConfig package because it manages the ~/.rectx ProjectConfig directory where the templates are stored.
 		case "add":
 			EnsureArguments(4, "template add")
 			config.AddTemplate(os.Args[3])
@@ -64,7 +64,7 @@ func main() {
 
 		// `rectx template default <template>` sets the provided template as the default template for project generation.
 		// This means if you don't select a template this template will be used. The default template is `default.rect.template`.
-		// Although this is a template subcommand, it uses the config package because that package manages the rectx config where the default template is stored.
+		// Although this is a template subcommand, it uses the ProjectConfig package because that package manages the rectx ProjectConfig where the default template is stored.
 		case "default":
 			EnsureArguments(4, "template default")
 			config.SetDefaultTemplate(os.Args[3])
@@ -84,9 +84,9 @@ func main() {
 			fmt.Printf("Unknown subcommand \"%s\"! Maybe try rectx templates --help for a list of subcommands...\n", os.Args[2])
 		}
 
-	// rectx config
+	// rectx ProjectConfig
 	// TODO I should probably start this before it's too late - Tokorv
-	case "config":
+	case "ProjectConfig":
 		handleParseErrorAndHelpFlag(configCmd, configCmd.Parse(os.Args[2:]), ShowConfigHelpMenu)
 
 	case "help":
@@ -115,7 +115,7 @@ func EnsureArguments(requiredArgumentCount int, command string) {
 
 		// We print a <subcommand> only if command is a command that requires subcommands.
 		// Otheriwse, we can just display the actual command + subcommand used.
-		for _, COMMAND := range []string{"template", "templates", "config"} {
+		for _, COMMAND := range []string{"template", "templates", "ProjectConfig"} {
 			if command == COMMAND {
 				fmt.Print(command + " <subcommand> ")
 				displayUsageWithSubcommand = true
