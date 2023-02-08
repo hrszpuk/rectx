@@ -19,6 +19,7 @@ type (
 		Name    string
 		Authors []string
 		Version string
+		License string
 	}
 
 	BuildConfig struct {
@@ -59,6 +60,7 @@ func CreateDefaultConfig() *ProjectConfig {
 		Name:    "",
 		Authors: nil,
 		Version: "",
+		License: "",
 	}
 
 	config := ProjectConfig{
