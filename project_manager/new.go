@@ -2,9 +2,11 @@ package project_manager
 
 import (
 	"fmt"
+	"rectx/licenses"
 	projectConfig "rectx/project_manager/config"
 	"rectx/templates"
 	"strings"
+	"time"
 )
 
 func New() {
@@ -19,7 +21,17 @@ func New() {
 	pc.Project.Authors = append(pc.Project.Authors, author)
 
 	pc.Project.Version = GetVersion()
+	pc.Project.License = licenses.Prompt()
 
+	variables := make(map[string]string)
+	variables["%PROJECT_NAME%"] = pc.Project.Name
+	variables["%AUTHOR%"] = pc.Project.Authors[0]
+	year, month, day := time.Now().Date()
+	variables["%YEAR%"] = string(rune(year))
+	variables["%MONTH%"] = month.String()
+	variables["%DAY%"] = string(rune(day))
+
+	// TODO store template name in pc?
 	templateName := GetTemplate()
 
 	CreateNewProject(pc, templateName)
