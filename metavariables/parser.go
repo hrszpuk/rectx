@@ -34,7 +34,6 @@ func (p *Parser) Parse() string {
 				p.index++
 				if p.current() == "%" {
 					buffer += p.current()
-					fmt.Printf("BUFFER EXIT: %s\n", buffer)
 					break
 				}
 			}
@@ -48,7 +47,6 @@ func (p *Parser) Parse() string {
 			// If found, replace with metavariable value
 			if metaContent, found := p.variables[buffer]; found {
 				p.output += metaContent
-				fmt.Printf("Replaced %s with %s\n", buffer, metaContent)
 				p.index++
 			} else {
 				// Otherwise, write buffer to output
