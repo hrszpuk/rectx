@@ -1,10 +1,10 @@
-package project_manager
+package projectManager
 
 import (
 	"fmt"
 	"os"
 	"os/exec"
-	ProjectConfig "rectx/project_manager/config"
+	ProjectConfig "rectx/projectManager/config"
 	"rectx/utilities"
 )
 

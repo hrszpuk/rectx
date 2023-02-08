@@ -1,9 +1,9 @@
-package project_manager
+package projectManager
 
 import (
 	"fmt"
 	"rectx/licenses"
-	projectConfig "rectx/project_manager/config"
+	projectConfig "rectx/projectManager/config"
 	"rectx/templates"
 	"strings"
 )
