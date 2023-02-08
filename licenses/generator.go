@@ -10,6 +10,7 @@ func GenerateLicense(license string, variables map[string]string) {
 	bytes, err := os.ReadFile(utilities.GetRectxPath() + "/licenses/" + license)
 	utilities.Check(err, true, "Failed to fetch license file specified!")
 	content := string(bytes)
+
 	content = metavariables.NewParser(content, variables).Parse()
 
 	file, err := os.Create(variables["%PROJECT_NAME%"] + "/" + "LICENSE")
