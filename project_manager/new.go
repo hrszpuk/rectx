@@ -31,10 +31,9 @@ func New() {
 	variables["%MONTH%"] = month.String()
 	variables["%DAY%"] = string(rune(day))
 
-	// TODO store template name in pc?
-	templateName := GetTemplate()
+	pc.Project.Template = GetTemplate()
 
-	CreateNewProject(pc, templateName)
+	CreateNewProject(pc)
 
 	pc.Dump(pc.Project.Name + "/project.rectx")
 }
