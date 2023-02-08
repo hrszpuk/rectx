@@ -2,13 +2,11 @@ package licenses
 
 import (
 	"os"
-	"rectx/config"
 	"rectx/metavariables"
 	"rectx/utilities"
 )
 
 func GenerateLicense(license string, variables map[string]string) {
-	config.ValidateLicenses()
 	bytes, err := os.ReadFile(utilities.GetRectxPath() + "/licenses/" + license)
 	utilities.Check(err, true, "Failed to fetch license file specified!")
 	content := string(bytes)
