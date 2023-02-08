@@ -22,6 +22,7 @@ func New() {
 
 	pc.Project.Version = GetVersion()
 	pc.Project.License = licenses.Prompt()
+	pc.Project.Template = GetTemplate()
 
 	variables := make(map[string]string)
 	variables["%PROJECT_NAME%"] = pc.Project.Name
@@ -30,8 +31,6 @@ func New() {
 	variables["%YEAR%"] = string(rune(year))
 	variables["%MONTH%"] = month.String()
 	variables["%DAY%"] = string(rune(day))
-
-	pc.Project.Template = GetTemplate()
 
 	CreateNewProject(pc, variables)
 

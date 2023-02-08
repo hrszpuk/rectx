@@ -41,7 +41,9 @@ func CreateNewProject(config *projectConfig.ProjectConfig, variables map[string]
 		utilities.Check(err, true, "Attempt to read template file failed.")
 	}
 
-	licenses.GenerateLicense(config.Project.License, variables)
+	if config.Project.License != "None" {
+		licenses.GenerateLicense(config.Project.License, variables)
+	}
 
 	parser := templates.NewTemplateParser(string(f))
 	statements := parser.Parse()
