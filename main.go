@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"rectx/config"
-	"rectx/project_manager"
+	"rectx/projectManager"
 	"rectx/templates"
 	"strings"
 )
@@ -21,16 +21,16 @@ func main() {
 	switch os.Args[1] {
 
 	// rectx new|build|run
-	// These commands have no subcommands and their flags are handled in the project_manager module.
+	// These commands have no subcommands and their flags are handled in the projectManager module.
 	case "new":
 		handleParseErrorAndHelpFlag(newCmd, newCmd.Parse(os.Args[2:]), ShowNewHelpMenu)
-		project_manager.New()
+		projectManager.New()
 	case "build":
 		handleParseErrorAndHelpFlag(buildCmd, buildCmd.Parse(os.Args[2:]), ShowBuildHelpMenu)
-		project_manager.Build()
+		projectManager.Build()
 	case "run":
 		handleParseErrorAndHelpFlag(runCmd, runCmd.Parse(os.Args[2:]), ShowRunHelpMenu)
-		project_manager.Run()
+		projectManager.Run()
 
 	// rectx template|templates
 	// I allow both "templates" and "template" because both go well with the subcommands and I kept putting the wrong one.
