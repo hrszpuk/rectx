@@ -10,6 +10,7 @@ var LICENSES = []string{
 	"GNU_LGPLv3",
 	"MIT_License",
 	"Mozilla_Public_License_2.0",
+	"None",
 }
 
 func DownloadLicenses(path string) {
