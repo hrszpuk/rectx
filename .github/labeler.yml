@@ -1,6 +1,6 @@
 project-manager:
-  - any: ["project_manager/*"]
-  - any: ["project_manager/**/*"]
+  - any: ["projectManager/*"]
+  - any: ["projectManager/**/*"]
   
 utilities:
   - any: ["utilities/*"]
