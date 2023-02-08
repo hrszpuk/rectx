@@ -33,7 +33,7 @@ func New() {
 
 	pc.Project.Template = GetTemplate()
 
-	CreateNewProject(pc)
+	CreateNewProject(pc, variables)
 
 	pc.Dump(pc.Project.Name + "/project.rectx")
 }

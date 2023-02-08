@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"rectx/licenses"
 	projectConfig "rectx/project_manager/config"
 	"rectx/templates"
 	"rectx/utilities"
 	"strings"
 )
 
-func CreateNewProject(config *projectConfig.ProjectConfig) {
+func CreateNewProject(config *projectConfig.ProjectConfig, variables map[string]string) {
 	fmt.Print("Generating project... ")
 
 	if file, err := os.Stat(config.Project.Name); err == nil {
@@ -39,6 +40,8 @@ func CreateNewProject(config *projectConfig.ProjectConfig) {
 	} else {
 		utilities.Check(err, true, "Attempt to read template file failed.")
 	}
+
+	licenses.GenerateLicense(config.Project.License, variables)
 
 	parser := templates.NewTemplateParser(string(f))
 	statements := parser.Parse()
