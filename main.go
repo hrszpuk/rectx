@@ -37,6 +37,7 @@ func main() {
 	case "templates":
 		fallthrough
 	case "template":
+		// TODO debug flag not working for template subcommands - Issue should probably be created.
 		handleParseErrorAndHelpFlag(templateCmd, templateCmd.Parse(os.Args[2:]), ShowTemplateHelpMenu)
 		EnsureArguments(3, "template")
 
@@ -71,7 +72,7 @@ func main() {
 		// `rectx template snapshot <path>` generates a .rectx.template file from the information provided in the directory provided.
 		// NOTE: the template name will be taken from the directory name, commands should be held within a file called "commands"
 		case "snapshot":
-			// TODO maybe an exlude flag should be added so people can avoid files named "commands" that have other purposes?
+			// TODO maybe an exclude flag should be added so people can avoid files named "commands" that have other purposes?
 			EnsureArguments(4, "template snapshot")
 			templates.Snapshot(os.Args[3])
 
