@@ -1,19 +1,18 @@
 package metavariables
-// I love how this entire package can just be replaced with a strings.Replace() function LMAO
 
 type Parser struct {
-	content       string
-	output        string
-	index         int
-	metavariables map[string]string
+	content   string
+	output    string
+	index     int
+	variables map[string]string
 }
 
-func NewParser(content string, metavariables map[string]string) *Parser {
+func NewParser(content string, variables map[string]string) *Parser {
 	return &Parser{
-		content:       content,
-		output:        "",
-		index:         0,
-		metavariables: metavariables,
+		content:   content,
+		output:    "",
+		index:     0,
+		variables: variables,
 	}
 }
 
@@ -25,10 +24,14 @@ func (p *Parser) Parse() string {
 			for p.index < len(p.content) {
 				buffer += p.current()
 				if p.current() == "\n" || p.current() == " " ||
-					p.current() == "\t" || p.current() == "%" {
+					p.current() == "\t" {
 					break
 				}
 				p.index++
+				if p.current() == "%" {
+					buffer += p.current()
+					break
+				}
 			}
 
 			if buffer[len(buffer)-1] != '%' {
@@ -37,12 +40,9 @@ func (p *Parser) Parse() string {
 				continue
 			}
 
-			// Lookup %...% in metavariables
-			metacontent, ok := p.metavariables[buffer]
-
-			// If found, replace with metavariable value
-			if ok {
-				p.output = metacontent
+			// If found, replace with meta variable value
+			if metaContent, found := p.variables[buffer]; found {
+				p.output += metaContent
 				p.index++
 			} else {
 				// Otherwise, write buffer to output

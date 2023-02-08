@@ -4,14 +4,25 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"rectx/licenses"
 	projectConfig "rectx/project_manager/config"
 	"rectx/templates"
 	"rectx/utilities"
+	"strconv"
 	"strings"
+	"time"
 )
 
-func CreateNewProject(config *projectConfig.ProjectConfig, templateName string) {
+func CreateNewProject(config *projectConfig.ProjectConfig) {
 	fmt.Print("Generating project... ")
+
+	variables := make(map[string]string)
+	variables["%PROJECT_NAME%"] = config.Project.Name
+	variables["%AUTHOR%"] = config.Project.Authors[0]
+	year, month, day := time.Now().Date()
+	variables["%YEAR%"] = strconv.Itoa(year)
+	variables["%MONTH%"] = month.String()
+	variables["%DAY%"] = strconv.Itoa(day)
 
 	if file, err := os.Stat(config.Project.Name); err == nil {
 		tyype := ""
@@ -33,11 +44,15 @@ func CreateNewProject(config *projectConfig.ProjectConfig, templateName string) 
 	}
 	utilities.Check(os.Mkdir(config.Project.Name, 0750), true, "Attempt to create project directory failed... Permission levels may not be sufficient?")
 
-	f, err := os.ReadFile(utilities.GetRectxPath() + "/templates/" + templateName)
+	f, err := os.ReadFile(utilities.GetRectxPath() + "/templates/" + config.Project.Template)
 	if os.IsNotExist(err) {
 		utilities.Check(err, true, "Attempt to read template file failed because it doesn't exist... What?")
 	} else {
 		utilities.Check(err, true, "Attempt to read template file failed.")
+	}
+
+	if config.Project.License != "None" {
+		licenses.GenerateLicense(config.Project.License, variables)
 	}
 
 	parser := templates.NewTemplateParser(string(f))

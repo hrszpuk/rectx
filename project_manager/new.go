@@ -2,6 +2,7 @@ package project_manager
 
 import (
 	"fmt"
+	"rectx/licenses"
 	projectConfig "rectx/project_manager/config"
 	"rectx/templates"
 	"strings"
@@ -19,10 +20,10 @@ func New() {
 	pc.Project.Authors = append(pc.Project.Authors, author)
 
 	pc.Project.Version = GetVersion()
+	pc.Project.License = licenses.Prompt()
+	pc.Project.Template = GetTemplate()
 
-	templateName := GetTemplate()
-
-	CreateNewProject(pc, templateName)
+	CreateNewProject(pc)
 
 	pc.Dump(pc.Project.Name + "/project.rectx")
 }
