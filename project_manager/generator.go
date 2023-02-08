@@ -8,11 +8,21 @@ import (
 	projectConfig "rectx/project_manager/config"
 	"rectx/templates"
 	"rectx/utilities"
+	"strconv"
 	"strings"
+	"time"
 )
 
-func CreateNewProject(config *projectConfig.ProjectConfig, variables map[string]string) {
+func CreateNewProject(config *projectConfig.ProjectConfig) {
 	fmt.Print("Generating project... ")
+
+	variables := make(map[string]string)
+	variables["%PROJECT_NAME%"] = config.Project.Name
+	variables["%AUTHOR%"] = config.Project.Authors[0]
+	year, month, day := time.Now().Date()
+	variables["%YEAR%"] = strconv.Itoa(year)
+	variables["%MONTH%"] = month.String()
+	variables["%DAY%"] = strconv.Itoa(day)
 
 	if file, err := os.Stat(config.Project.Name); err == nil {
 		tyype := ""

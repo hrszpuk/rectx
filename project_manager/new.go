@@ -5,9 +5,7 @@ import (
 	"rectx/licenses"
 	projectConfig "rectx/project_manager/config"
 	"rectx/templates"
-	"strconv"
 	"strings"
-	"time"
 )
 
 func New() {
@@ -25,15 +23,7 @@ func New() {
 	pc.Project.License = licenses.Prompt()
 	pc.Project.Template = GetTemplate()
 
-	variables := make(map[string]string)
-	variables["%PROJECT_NAME%"] = pc.Project.Name
-	variables["%AUTHOR%"] = pc.Project.Authors[0]
-	year, month, day := time.Now().Date()
-	variables["%YEAR%"] = strconv.Itoa(year)
-	variables["%MONTH%"] = month.String()
-	variables["%DAY%"] = strconv.Itoa(day)
-
-	CreateNewProject(pc, variables)
+	CreateNewProject(pc)
 
 	pc.Dump(pc.Project.Name + "/project.rectx")
 }
