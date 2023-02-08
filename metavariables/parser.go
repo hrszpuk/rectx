@@ -1,7 +1,5 @@
 package metavariables
 
-import "fmt"
-
 type Parser struct {
 	content   string
 	output    string
@@ -10,8 +8,6 @@ type Parser struct {
 }
 
 func NewParser(content string, variables map[string]string) *Parser {
-	fmt.Println(variables)
-
 	return &Parser{
 		content:   content,
 		output:    "",
@@ -44,7 +40,7 @@ func (p *Parser) Parse() string {
 				continue
 			}
 
-			// If found, replace with metavariable value
+			// If found, replace with meta variable value
 			if metaContent, found := p.variables[buffer]; found {
 				p.output += metaContent
 				p.index++
