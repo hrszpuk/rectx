@@ -24,21 +24,19 @@ func Build() {
 	compiler := conf.BuildProfile.Compiler
 	main := "main.rct" // TODO add entry source file to build profile
 
-	if _, err := os.Stat(buildPath + "/" + name); !os.IsNotExist(err) {
-		utilities.Check(exec.Command("rm", buildPath+"/"+name, "-f").Run(), false, "Attempted to add ")
+	if _, err := os.Stat(buildPath + "/" + name); os.IsExist(err) {
+		utilities.Check(exec.Command("rm", buildPath+"/"+name, "-f").Run(), false, "Executable exists but was unable to remove it from build path!")
 
 	}
 
 	dir, err := os.ReadDir(sourcePath)
-	utilities.ErrCheckReadDir(err, sourcePath, func() {
-		if dir, err := os.Stat(sourcePath); !dir.IsDir() {
-			utilities.Check(err, true, fmt.Sprintf("Could not build \"%s\" because it is not a directory!", sourcePath))
-		} else if os.IsNotExist(err) {
-			utilities.Check(err, true, fmt.Sprintf("Could not build \"%s\" because it does not exist!", sourcePath))
-		} else if os.IsPermission(err) {
-			utilities.Check(err, true, fmt.Sprintf("Could not build \"%s\" due to a lack of permissions!", sourcePath))
-		}
-	})
+	msg := ""
+	if sourcePath != "" {
+		msg = fmt.Sprintf("Could not build %s directory!", sourcePath)
+	} else {
+		msg = "Source directory has not been set. Cannot build. Please check your project.rectx file."
+	}
+	utilities.Check(err, true, msg)
 
 	if len(dir) < 1 {
 		fmt.Printf("Found no files in %s!\n", sourcePath)
