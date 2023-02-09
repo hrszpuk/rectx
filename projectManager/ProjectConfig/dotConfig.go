@@ -1,25 +1,16 @@
 package ProjectConfig
 
+import "os"
+
+// Checks if the .rectx config directory exists
 func ValidateProjectConfigDirectory() {
-
+	if _, err := os.Stat(".rectx"); os.IsNotExist(err) {
+		GenerateProjectConfigDirectory()
+	}
 }
 
+// Generates a .rectx config
 func GenerateProjectConfigDirectory() {
-
-}
-
-func CheckSourceCodeChanges() {
-
-}
-
-func GenerateHash(name string) {
-
-}
-
-func CompareHash(hash1 string, hash2 string) {
-
-}
-
-func UpdateHash(name string) {
+	os.Mkdir(".rectx", os.ModeDir)
 
 }
