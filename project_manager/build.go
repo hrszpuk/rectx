@@ -44,7 +44,8 @@ func Build() {
 	}
 
 	_, err = os.Stat(sourcePath + "/" + main)
-	utilities.Check(err, true, "Attempted to build %s but failed for unknown reasons!")
+	msg = fmt.Sprintf("Attempted to build %s but failed for unknown reasons!", sourcePath+"/"+main)
+	utilities.Check(err, true, msg)
 
 	utilities.Check(exec.Command(compiler, main, "-o="+buildPath+"/"+main).Run(), true, "Failed to build for unknown reasons!")
 }
