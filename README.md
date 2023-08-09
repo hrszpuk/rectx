@@ -14,7 +14,12 @@
 
 </p>
 
-### Features [WIP]
+## :warning: This project has been archived :warning:
+This project relied on the ReCT programming language's development as it is designed to be used with either rgoc or rctc (rect compilers).
+Since these compilers are no longer being maintained I have decided to archive the project.
+This project is still licensed under GPLv3 for anyone wishes to continue its development.
+
+### Features
 - **Project generation**: Start a new project without the hassle of setting everything up!
 - **Easy build/run**: No more messing around on the command line, now you can compile with just one simple command!
 - **Project configuration**: Change everything about your project with a simple little config file!
